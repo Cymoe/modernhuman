@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Link from "next/link"
 
 export default function Home() {
   return (
@@ -7,7 +8,9 @@ export default function Home() {
       <header className="p-4 flex justify-between items-center">
         <div className="text-2xl font-bold">ModernHuman</div>
         <nav className="flex-grow flex justify-center">
-          <Button variant="ghost">Courses</Button>
+          <Link href="/dashboard">
+            <Button variant="ghost">Courses</Button>
+          </Link>
           <Button variant="ghost">Support</Button>
         </nav>
         <div className="flex">
@@ -24,8 +27,12 @@ export default function Home() {
         Accelerate Your Success as a Top AI User.
         </p>
         <div className="flex gap-4">
-          <Button size="lg">View Courses</Button>
-          <Button size="lg" variant="outline" className="text-black border-white">Get Access</Button>
+          <Link href="/dashboard">
+            <Button size="lg">View Courses</Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button size="lg" variant="outline" className="text-black border-white">Get Access</Button>
+          </Link>
         </div>
 
         <div className="mt-16 bg-zinc-900 rounded-lg p-6 max-w-2xl w-full">
