@@ -1,23 +1,15 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs"
 
 export default function Home() {
+  const { isSignedIn, user } = useUser();
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
-      <header className="p-4 flex justify-between items-center">
-        <div className="text-2xl font-bold">ModernHuman</div>
-        <nav className="flex-grow flex justify-center">
-          <Link href="/dashboard">
-            <Button variant="ghost">Courses</Button>
-          </Link>
-          <Button variant="ghost">Support</Button>
-        </nav>
-        <div className="flex">
-          <Button variant="ghost">Login</Button>
-          <Button variant="ghost">Join Now</Button>
-        </div>
-      </header>
 
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4">
         <h1 className="text-5xl font-bold mb-4">
@@ -30,9 +22,15 @@ export default function Home() {
           <Link href="/dashboard">
             <Button size="lg">View Courses</Button>
           </Link>
-          <Link href="/dashboard">
-            <Button size="lg" variant="outline" className="text-black border-white">Get Access</Button>
-          </Link>
+          {isSignedIn ? (
+            <Link href="/dashboard">
+              <Button size="lg" variant="outline" className="text-white border-white">Go to Dashboard</Button>
+            </Link>
+          ) : (
+            <SignUpButton mode="modal">
+              <Button size="lg" variant="outline" className="text-black border-white">Get Started</Button>
+            </SignUpButton>
+          )}
         </div>
 
         <div className="mt-16 bg-zinc-900 rounded-lg p-6 max-w-2xl w-full">
