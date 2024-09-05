@@ -1,6 +1,6 @@
 'use client'
 
-import { useProgress } from "../contexts/ProgressContext"
+import { useProgress } from "@/app/contexts/ProgressContext"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
