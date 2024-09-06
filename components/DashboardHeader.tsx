@@ -36,6 +36,9 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
           display: "flex",
           alignItems: "center",
         },
+        userButtonOuterIdentifier: {
+          color: "rgb(75 85 99)",
+        },
       },
     },
     userProfileMode: "navigation" as const,
