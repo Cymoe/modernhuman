@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useProgress } from "@/app/contexts/ProgressContext"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,14 @@ const modules = [
 ]
 
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div>Loading profile...</div>}>
+      <ProfileContent />
+    </Suspense>
+  )
+}
+
+function ProfileContent() {
   const { progress } = useProgress()
 
   const totalLessons = modules.reduce((sum, module) => sum + module.lessons, 0)

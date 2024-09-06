@@ -8,6 +8,7 @@ import Header from '../components/Header'
 import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
 import { useScrollToTop } from './hooks/useScrollToTop';
+import { Suspense } from 'react'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -16,17 +17,39 @@ const onToggleComplete = () => {
   // Function to toggle lesson completion
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+function LayoutContent({ children }: { children: React.ReactNode }) {
   useScrollToTop();
   const pathname = usePathname();
 
   const isDashboardOrRelated = pathname?.startsWith('/dashboard') || pathname?.includes('/module/');
   const isDashboardPage = pathname === '/dashboard';
 
+  return (
+    <ProgressProvider>
+      {isDashboardOrRelated ? (
+        <div className="flex flex-col bg-black min-h-screen text-white">
+          <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
+          <main className="flex-grow mt-16">
+            <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-2' : 'p-2'}`}>
+              {children}
+            </div>
+          </main>
+        </div>
+      ) : (
+        <>
+          <Header />
+          <main>{children}</main>
+        </>
+      )}
+    </ProgressProvider>
+  )
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
@@ -37,23 +60,9 @@ export default function RootLayout({
     >
       <html lang="en">
         <body className={inter.className}>
-          <ProgressProvider>
-            {isDashboardOrRelated ? (
-              <div className="flex flex-col bg-black min-h-screen text-white">
-                <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
-                <main className="flex-grow mt-16">
-                  <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-2' : 'p-2'}`}>
-                    {children}
-                  </div>
-                </main>
-              </div>
-            ) : (
-              <>
-                <Header />
-                <main>{children}</main>
-              </>
-            )}
-          </ProgressProvider>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LayoutContent>{children}</LayoutContent>
+          </Suspense>
         </body>
       </html>
     </ClerkProvider>

@@ -49,14 +49,6 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
             </Link>
           </div>
           <div className="flex items-center">
-            {isLessonPage && (
-              <button 
-                onClick={onToggleComplete}
-                className={`mr-4 ${isLessonCompleted ? 'text-green-500' : 'text-gray-400'}`}
-              >
-                <CheckCircle className="h-6 w-6" />
-              </button>
-            )}
             {isSignedIn && (
               <UserButton 
                 afterSignOutUrl="/" 

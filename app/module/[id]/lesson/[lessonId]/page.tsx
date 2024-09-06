@@ -59,14 +59,12 @@ export default function LessonPage() {
     <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-gray-300 text-base md:text-2xl font-bold">{lesson?.title}</h1>
-        {!isMobile && (
-          <button
-            onClick={handleComplete}
-            className={`rounded-full ${isCompleted ? 'text-green-500' : 'text-gray-400'} hover:text-green-500`}
-          >
-            <CheckCircle className="h-6 w-6" />
-          </button>
-        )}
+        <button
+          onClick={handleComplete}
+          className={`rounded-full ${isCompleted ? 'text-green-500' : 'text-gray-400'} hover:text-green-500`}
+        >
+          <CheckCircle className="h-6 w-6" />
+        </button>
       </div>
       <div className="relative w-full aspect-video mb-6 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-4xl mx-auto">
         {!isPlaying ? (
@@ -107,10 +105,11 @@ export default function LessonPage() {
 
   return (
     <>
-      <DashboardHeader 
+      {/* Remove or comment out the DashboardHeader */}
+      {/* <DashboardHeader 
         isLessonCompleted={isCompleted} 
         onToggleComplete={handleComplete}
-      />
+      /> */}
       <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
         {!isMobile && (
           <LessonSidebar 

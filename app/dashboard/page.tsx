@@ -1,16 +1,25 @@
 'use client'
 
+import { Suspense } from 'react'
 import { modules } from "@/app/data/courseData"
 import ModuleCard from "@/components/ModuleCard"
 import { useUser } from "@clerk/nextjs"
 import { useProgress } from "@/app/contexts/ProgressContext"
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading dashboard...</div>}>
+      <DashboardContent />
+    </Suspense>
+  )
+}
+
+function DashboardContent() {
   const { isSignedIn } = useUser()
   const { progress } = useProgress()
 
   return (
-    <div className="pt-16"> {/* Added top padding here */}
+    <div className="pt-16">
       {isSignedIn ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2 md:p-6">
           {modules.map((module) => {

@@ -7,10 +7,10 @@ export function useScrollToTop() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-      }
-      window.scrollTo(0, 0);
+      // Delay the scroll to top slightly to ensure it happens after route change
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 0);
     }
   }, [pathname, searchParams]);
 }

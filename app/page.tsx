@@ -1,11 +1,20 @@
 'use client'
 
+import { Suspense } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs"
 
 export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
+  )
+}
+
+function HomeContent() {
   const { isSignedIn, user } = useUser();
 
   return (
