@@ -8,8 +8,6 @@ import Header from '../components/Header'
 import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
 import { Suspense } from 'react'
-import ScrollToTopButton from '../components/ScrollToTopButton'
-import { ScrollToTop } from '../components/ScrollToTop'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,6 +16,7 @@ const onToggleComplete = () => {
   // Function to toggle lesson completion
 };
 
+
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -25,9 +24,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isDashboardPage = pathname === '/dashboard';
 
   return (
-<<<<<<< HEAD
     <ProgressProvider>
-      <ScrollToTop />
       {isDashboardOrRelated ? (
         <div className="flex flex-col bg-black min-h-screen text-white">
           <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
@@ -36,40 +33,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               {children}
             </div>
           </main>
-          <ScrollToTopButton />
         </div>
       ) : (
         <>
           <Header />
           <main>{children}</main>
-          <ScrollToTopButton />
         </>
       )}
     </ProgressProvider>
-=======
-    <>
-      <ScrollToTop />
-      <ProgressProvider>
-        {isDashboardOrRelated ? (
-          <div className="flex flex-col bg-black min-h-screen text-white">
-            <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
-            <main className="flex-grow mt-16">
-              <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-2' : 'p-2'}`}>
-                {children}
-              </div>
-            </main>
-            <ScrollToTopButton />
-          </div>
-        ) : (
-          <>
-            <Header />
-            <main>{children}</main>
-            <ScrollToTopButton />
-          </>
-        )}
-      </ProgressProvider>
-    </>
->>>>>>> feature
   )
 }
 
