@@ -44,6 +44,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
     <div className="flex flex-col md:flex-row h-full">
       {isMobile ? (
         <MobileModuleView 
+          key={moduleId}  // Add this line
           module={mobileModuleData} 
           onLessonClick={handleLessonClick}
         />

@@ -3,6 +3,7 @@
 import { Module } from '@/types/courseTypes'
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
+import { useEffect } from 'react'
 
 interface Props {
   module: Module
@@ -10,6 +11,10 @@ interface Props {
 }
 
 export default function MobileModuleView({ module, onLessonClick }: Props) {
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   return (
     <div className="w-full bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl">
       <div className="p-4 mt-8">
