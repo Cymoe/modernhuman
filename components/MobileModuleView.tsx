@@ -5,10 +5,11 @@ import { Module } from '@/types/courseTypes'
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
 import { useProgress } from "@/app/contexts/ProgressContext"
+import Link from 'next/link'
 
 interface Props {
   module: Module
-  onLessonClick: (lessonId: number) => void
+  onLessonClick?: (lessonId: number) => void // Make it optional
 }
 
 const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick }) => {
@@ -20,6 +21,19 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
     const progressPercentage = (completedLessons / module.lessons.length) * 100
     return { moduleProgress, progressPercentage }
   }, [progress, module.id, module.lessons.length])
+
+  const handleLessonClick = (e: React.MouseEvent<HTMLAnchorElement>, lessonId: number) => {
+    e.preventDefault()
+    if (onLessonClick) {
+      onLessonClick(lessonId)
+    } else {
+      const href = `/module/${module.id}/lesson/${lessonId}`
+      window.location.href = href
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 100)
+    }
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -35,13 +49,14 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
         <ul>
           {module.lessons.map((lesson) => (
             <li key={lesson.id}>
-              <button 
-                onClick={() => onLessonClick(lesson.id)}
+              <Link 
+                href={`/module/${module.id}/lesson/${lesson.id}`}
+                onClick={(e) => handleLessonClick(e, lesson.id)}
                 className="flex items-center justify-between p-2 transition-colors rounded-xl border w-full text-left border-transparent hover:border-blue-600"
               >
                 <span>{lesson.title}</span>
                 {moduleProgress[lesson.id.toString()] && <CheckCircle className="h-4 w-4 text-green-500" />}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
