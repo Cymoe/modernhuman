@@ -9,6 +9,7 @@ import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
 import { Suspense } from 'react'
 import ScrollToTopButton from '../components/ScrollToTopButton'
+import { ScrollToTop } from '../components/ScrollToTop'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,6 +26,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <ProgressProvider>
+      <ScrollToTop />
       {isDashboardOrRelated ? (
         <div className="flex flex-col bg-black min-h-screen text-white">
           <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
@@ -59,7 +61,7 @@ export default function RootLayout({
       afterSignInUrl="/dashboard"
       afterSignUpUrl="/dashboard"
     >
-      <html lang="en">
+      <html lang="en" style={{ scrollBehavior: 'auto' }}>
         <body className={inter.className}>
           <Suspense fallback={<div>Loading...</div>}>
             <LayoutContent>{children}</LayoutContent>
