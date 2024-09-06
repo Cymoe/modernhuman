@@ -105,47 +105,29 @@ export default function LessonPage() {
 
   return (
     <div className="flex flex-col lg:flex-row">
-      {isMobile ? (
-        showLessonContent && lesson ? (
-          <div className="flex-1 p-4 overflow-y-auto">
-            <Button onClick={() => setShowLessonContent(false)} className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Lessons
-            </Button>
-            {renderLessonContent()}
-          </div>
-        ) : (
-          <LessonSidebar 
-            moduleId={moduleId} 
-            lessons={moduleData.lessons} 
-            moduleTitle={moduleData.title}
-            onLessonClick={handleLessonClick}
-            currentLessonId={currentLessonId}
-          />
-        )
-      ) : (
-        <>
-          <LessonSidebar 
-            moduleId={moduleId} 
-            lessons={moduleData.lessons} 
-            moduleTitle={moduleData.title}
-            currentLessonId={currentLessonId}
-          />
-          <div className="flex-1 p-6 lg:ml-96">
-            {lesson ? renderLessonContent() : (
-              <div className="text-center">
-                <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
-                <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
-              </div>
-            )}
-          </div>
-        </>
+      <LessonSidebar 
+        moduleId={moduleId} 
+        lessons={moduleData.lessons} 
+        moduleTitle={moduleData.title}
+        onLessonClick={handleLessonClick}
+        currentLessonId={currentLessonId}
+      />
+      {(!isMobile || currentLessonId) && (
+        <div className="flex-1 p-6 lg:ml-96">
+          {lesson ? renderLessonContent() : (
+            <div className="text-center">
+              <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
+              <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
+            </div>
+          )}
+        </div>
       )}
     </div>
   )
 }
-
 function getYouTubeId(url: string) {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;
 }
+

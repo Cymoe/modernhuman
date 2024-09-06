@@ -25,16 +25,16 @@ export default function ModuleCard({ id, title, description, color, progressPerc
   const linkHref = isMobile ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
 
   return (
-    <Link href={linkHref} className="block h-full">
-      <Card className="bg-transparent border-zinc-700 transition-transform hover:scale-105 h-full flex flex-col overflow-hidden rounded-xl">
+    <Link href={`/module/${id}/lesson/${lessons[0].id}`} className="block h-full">
+      <Card className={`bg-transparent border-zinc-700 sm:hover:scale-105 transition-transform h-full flex flex-col overflow-hidden rounded-none sm:rounded-xl`}>
         <div className={`w-full h-48 ${color} border-b border-zinc-700`} />
-        <CardHeader>
+        <CardHeader className="p-6">
           <CardTitle className="text-[#e0e0e0] line-clamp-2 leading-tight min-h-[3rem] flex items-center">
             {title}
           </CardTitle>
           <p className="text-sm text-zinc-400 mt-2 line-clamp-3">{description}</p>
         </CardHeader>
-        <CardContent className="mt-auto">
+        <CardContent className="mt-auto p-6">
           <ProgressWithText value={progressPercentage} className="mt-4" />
         </CardContent>
       </Card>

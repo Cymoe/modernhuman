@@ -16,10 +16,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const isDashboardPage = pathname?.startsWith('/dashboard') || 
-                          pathname?.startsWith('/module') || 
-                          pathname?.startsWith('/lesson') || 
-                          pathname?.startsWith('/profile')
+  const isDashboardPage = pathname === '/dashboard'
+  const isDashboardOrRelated = pathname?.startsWith('/dashboard') || 
+                               pathname?.startsWith('/module') || 
+                               pathname?.startsWith('/lesson') || 
+                               pathname?.startsWith('/profile')
 
   return (
     <ClerkProvider
@@ -32,11 +33,11 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <ProgressProvider>
-            {isDashboardPage ? (
+            {isDashboardOrRelated ? (
               <div className="flex flex-col bg-black min-h-screen text-white">
                 <DashboardHeader />
-                <main className="flex-grow mt-16"> {/* Add margin-top here */}
-                  <div className="max-w-[1075px] mx-auto p-6">
+                <main className="flex-grow mt-16">
+                  <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-6' : 'p-6'}`}>
                     {children}
                   </div>
                 </main>
