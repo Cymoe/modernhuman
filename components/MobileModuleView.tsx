@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useEffect } from 'react'
 import { Module } from '@/types/courseTypes'
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
@@ -20,6 +20,10 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
     const progressPercentage = (completedLessons / module.lessons.length) * 100
     return { moduleProgress, progressPercentage }
   }, [progress, module.id, module.lessons.length])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   if (isLoading) {
     return <div>Loading...</div>

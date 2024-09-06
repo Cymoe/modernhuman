@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface ModuleCardProps {
   id: number
@@ -14,6 +15,7 @@ interface ModuleCardProps {
 
 export default function ModuleCard({ id, title, description, color, progressPercentage, lessons }: ModuleCardProps) {
   const [isMobile, setIsMobile] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
@@ -24,8 +26,16 @@ export default function ModuleCard({ id, title, description, color, progressPerc
 
   const linkHref = isMobile ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
 
+  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isMobile) {
+      e.preventDefault()
+      await router.push(linkHref)
+      window.scrollTo(0, 0)
+    }
+  }
+
   return (
-    <Link href={linkHref} className="block h-full">
+    <Link href={linkHref} onClick={handleClick} className="block h-full">
       <Card className="bg-transparent border-zinc-700 sm:hover:scale-105 transition-transform h-full flex flex-col overflow-hidden rounded-none sm:rounded-xl">
         <div className="w-full h-48 bg-transparent border-b border-zinc-700" />
         <CardHeader className="p-6">
