@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react'
 
 type Progress = {
   [moduleId: string]: {
@@ -14,18 +14,26 @@ type QuizScores = {
   }
 }
 
-type ProgressContextType = {
+interface ProgressContextType {
   progress: Progress
   quizScores: QuizScores
   updateProgress: (moduleId: string, lessonId: string, completed: boolean) => void
   updateQuizScore: (moduleId: string, lessonId: string, score: number) => void
+  completedLessons: Record<string, string[]>
 }
 
-const ProgressContext = createContext<ProgressContextType | undefined>(undefined)
+const ProgressContext = createContext<ProgressContextType>({
+  progress: {},
+  quizScores: {},
+  updateProgress: () => {},
+  updateQuizScore: () => {},
+  completedLessons: {}, // Initialize as an empty object
+});
 
-export function ProgressProvider({ children }: { children: ReactNode }) {
+export const ProgressProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [progress, setProgress] = useState<Progress>({})
   const [quizScores, setQuizScores] = useState<QuizScores>({})
+  const [completedLessons, setCompletedLessons] = useState<Record<string, string[]>>({});
 
   const updateProgress = (moduleId: string, lessonId: string, completed: boolean) => {
     setProgress(prev => ({
@@ -47,12 +55,25 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     }))
   }
 
+  const completedLessonsMemo = useMemo(() => {
+    return Object.entries(progress).reduce((acc, [moduleId, lessons]) => {
+      acc[moduleId] = Object.keys(lessons).filter(lessonId => lessons[lessonId]);
+      return acc;
+    }, {} as Record<string, string[]>);
+  }, [progress]);
+
   return (
-    <ProgressContext.Provider value={{ progress, quizScores, updateProgress, updateQuizScore }}>
+    <ProgressContext.Provider value={{
+      progress,
+      quizScores,
+      completedLessons: completedLessonsMemo,
+      updateProgress,
+      updateQuizScore
+    }}>
       {children}
     </ProgressContext.Provider>
-  )
-}
+  );
+};
 
 export function useProgress() {
   const context = useContext(ProgressContext)

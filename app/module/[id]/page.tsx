@@ -6,9 +6,11 @@ import LessonSidebar from "@/components/LessonSidebar"
 import LessonContent from "@/components/LessonContent"
 import { useState, useEffect } from 'react'
 import MobileModuleView from "@/components/MobileModuleView"
+import { useProgress } from "@/app/contexts/ProgressContext"
 
-export default function ModulePage() {
-  const params = useParams()
+export default function ModulePage({ params }: { params: { id: string } }) {
+  const progress = useProgress(); // Move this to the top level
+
   const router = useRouter()
   const [isMobile, setIsMobile] = useState(true) // Temporarily set to true
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null)
@@ -40,15 +42,18 @@ export default function ModulePage() {
 
   const selectedLesson = moduleData.lessons.find(l => l.id === selectedLessonId)
 
-  const { progress } = useProgress()
-  const moduleProgress = progress[moduleId.toString()] || {}
-  const completedLessons = Object.values(moduleProgress).filter(Boolean).length
-  const totalLessons = moduleData.lessons.length
-  const progressPercentage = (completedLessons / totalLessons) * 100
+  // Use optional chaining and provide a default empty array
+  const completedLessons = progress?.completedLessons[moduleId.toString()] ?? [];
+  const totalLessons = moduleData.lessons.length;
+  const progressPercentage = (completedLessons.length / totalLessons) * 100;
 
   const mobileModuleData = {
     ...moduleData,
-    progress: progressPercentage
+    progress: progressPercentage,
+    lessons: moduleData.lessons.map(lesson => ({
+      ...lesson,
+      completed: false // Add this line
+    })),
   }
 
   return (
@@ -62,6 +67,7 @@ export default function ModulePage() {
             lessons={moduleData.lessons} 
             moduleTitle={moduleData.title}
             onLessonClick={handleLessonClick}
+            currentLessonId={selectedLessonId}
           />
           {selectedLesson && (
             <div className="flex-grow">

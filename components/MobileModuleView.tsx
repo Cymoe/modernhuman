@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation'
 import { Module } from '@/types/courseTypes'
-import ProgressBar from './ProgressBar'
+import { ProgressWithText } from "@/components/ui/progress-with-text";
 
 interface Props {
   module: Module
@@ -14,9 +14,9 @@ export default function MobileModuleView({ module }: Props) {
   }
 
   return (
-    <div className="p-4 bg-red-100"> {/* Add a background color for testing */}
-      <h1 className="text-2xl font-bold mb-4">Mobile View: {module.title}</h1>
-      <ProgressBar progress={module.progress} />
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">{module.title}</h1>
+      <ProgressWithText value={module.progress} />
       <ul className="mt-4">
         {module.lessons.map((lesson) => (
           <li 
