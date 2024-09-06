@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useParams } from 'next/navigation'
 import { useUser, UserButton } from "@clerk/nextjs"
 import { useState, useEffect } from 'react'
 import { CheckCircle } from 'lucide-react'
@@ -12,6 +12,7 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({ isLessonCompleted, onToggleComplete }: DashboardHeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const params = useParams()
   const { isSignedIn } = useUser()
   const [isMobile, setIsMobile] = useState(false)
   
@@ -26,6 +27,14 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
+  const handleBackClick = () => {
+    if (isLessonPage && params.id) {
+      router.push(`/module/${params.id}`)
+    } else {
+      router.push('/dashboard')
+    }
+  }
+
   return (
     <>
       {isMobile && (
@@ -38,7 +47,7 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
                 <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             ) : (
-              <button onClick={() => router.back()} className="text-white mr-4">
+              <button onClick={handleBackClick} className="text-white mr-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
@@ -75,9 +84,6 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
               <nav className="flex items-center space-x-4">
                 <Link href="/dashboard" className={`hover:text-gray-300 relative ${isCoursesActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}>
                   Courses
-                </Link>
-                <Link href="/profile" className={`hover:text-gray-300 relative ${pathname === '/profile' ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}>
-                  Profile
                 </Link>
                 <Link href="/community" className={`hover:text-gray-300 relative ${pathname === '/community' ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}>
                   Community

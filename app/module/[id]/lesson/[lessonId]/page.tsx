@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button"
 import { useProgress } from "@/app/contexts/ProgressContext"
 import { modules } from "@/app/data/courseData"
 import LessonSidebar from "@/components/LessonSidebar"
-import { CheckCircle, ArrowLeft } from 'lucide-react'
+import { CheckCircle, ArrowLeft, ArrowRight, Menu } from 'lucide-react'
 import Image from 'next/image'
 import { Play } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import DashboardHeader from "@/components/DashboardHeader"
 import { calculateProgress } from '@/app/utils/progressCalculator';
 import { useScrollToTop } from '@/app/hooks/useScrollToTop'
+import Link from 'next/link'
 
 export default function LessonPage() {
   useScrollToTop()
@@ -59,6 +60,20 @@ export default function LessonPage() {
     router.push(`/module/${moduleId}/lesson/${lessonId}`)
   }
 
+  const currentModule = modules.find(m => m.id === moduleId)
+  const currentLesson = currentModule?.lessons.find(l => l.id === currentLessonId)
+  const nextLesson = currentModule?.lessons.find(l => l.id === (currentLessonId || 0) + 1)
+
+  const handleNextLesson = () => {
+    if (nextLesson) {
+      router.push(`/module/${moduleId}/lesson/${nextLesson.id}`)
+    }
+  }
+
+  const handleMenuClick = () => {
+    router.push(`/module/${moduleId}`);
+  }
+
   const renderLessonContent = () => (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -95,6 +110,24 @@ export default function LessonPage() {
             allowFullScreen
             className="w-full h-full rounded-lg"
           />
+        )}
+      </div>
+      <div className="flex justify-between items-center mb-4">
+        <Link 
+          href={`/module/${moduleId}`}
+          className="flex items-center text-gray-400 hover:text-white transition-colors md:hidden"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Menu
+        </Link>
+        {nextLesson && (
+          <Link 
+            href={`/module/${moduleId}/lesson/${nextLesson.id}`}
+            className="flex items-center text-gray-400 hover:text-white transition-colors ml-auto"
+          >
+            Next
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
         )}
       </div>
       <div className="prose max-w-none mb-6">
