@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 
@@ -7,10 +9,7 @@ export function useScrollToTop() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Delay the scroll to top slightly to ensure it happens after route change
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 0);
+      window.scrollTo(0, 0);
     }
   }, [pathname, searchParams]);
 }
