@@ -6,6 +6,7 @@ import LessonSidebar from "@/components/LessonSidebar"
 import { useState, useEffect } from 'react'
 import MobileModuleView from "@/components/MobileModuleView"
 import { useProgress } from "@/app/contexts/ProgressContext"
+import DashboardHeader from "@/components/DashboardHeader" // Add this import
 
 interface LessonSidebarProps {
   moduleId: number;
@@ -50,12 +51,15 @@ export default function ModulePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-full">
+    <div className="flex flex-col mt-16">
+      <DashboardHeader 
+        isLessonCompleted={false} // Replace with actual logic
+        onToggleComplete={() => {}} // Replace with actual function
+      />
       {isMobile ? (
-        <MobileModuleView 
+        <MobileModuleView
           key={moduleId}
-          module={mobileModuleData} 
-          onLessonClick={handleLessonClick}
+          module={mobileModuleData}
         />
       ) : (
         <LessonSidebar 
