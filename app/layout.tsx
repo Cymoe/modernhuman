@@ -8,6 +8,7 @@ import Header from '../components/Header'
 import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
 import { Suspense } from 'react'
+import { useScrollToTop } from '@/app/hooks/useScrollToTop'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -16,6 +17,10 @@ const onToggleComplete = () => {
   // Function to toggle lesson completion
 };
 
+function ScrollToTopWrapper({ children }: { children: React.ReactNode }) {
+  useScrollToTop();
+  return <>{children}</>;
+}
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -49,7 +54,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname(); // Add this line
+  const pathname = usePathname();
+  useScrollToTop(); // Add this line to use the hook directly in RootLayout
 
   return (
     <ClerkProvider

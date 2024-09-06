@@ -11,8 +11,10 @@ import { Play } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import DashboardHeader from "@/components/DashboardHeader"
 import { calculateProgress } from '@/app/utils/progressCalculator';
+import { useScrollToTop } from '@/app/hooks/useScrollToTop'
 
 export default function LessonPage() {
+  useScrollToTop()
   const params = useParams()
   const router = useRouter()
   const moduleId = parseInt(params.id as string)
@@ -32,9 +34,6 @@ export default function LessonPage() {
     }
     checkIfMobile()
     window.addEventListener('resize', checkIfMobile)
-
-    // Force scroll to top on component mount
-    window.scrollTo(0, 0)
 
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [currentLessonId])
