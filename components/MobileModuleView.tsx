@@ -23,9 +23,15 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
   }, [progress, module.id, module.lessons.length])
 
   useEffect(() => {
-    if (componentRef.current) {
-      componentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    // Delay the scroll to ensure content is rendered
+    const timer = setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }, 100)
+
+    return () => clearTimeout(timer)
   }, [])
 
   if (isLoading) {
