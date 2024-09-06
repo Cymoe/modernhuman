@@ -12,7 +12,7 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({ isLessonCompleted, onToggleComplete }: DashboardHeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, isSignedIn } = useUser()
+  const { isSignedIn } = useUser()
   const [isMobile, setIsMobile] = useState(false)
   
   const isCoursesActive = pathname === '/dashboard' || pathname.includes('/module') || pathname.includes('/lesson')
@@ -29,31 +29,45 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
   return (
     <>
       {isMobile && (
-        <header className="bg-black w-full border-b border-zinc-800 fixed top-0 left-0 right-0 z-50 p-4 flex items-center">
-          {isDashboardPage ? (
-            <svg className="h-6 w-6 text-white mr-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          ) : (
-            <button onClick={() => router.back()} className="text-white mr-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <header className="bg-black w-full border-b border-zinc-800 fixed top-0 left-0 right-0 z-50 p-4 flex items-center justify-between">
+          <div className="flex items-center">
+            {isDashboardPage ? (
+              <svg className="h-6 w-6 text-white mr-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </button>
-          )}
-          <Link href="/dashboard" className="text-gray-200 text-xl font-bold flex-grow text-left">
-            ModernHuman
-          </Link>
-          {isLessonPage && (
-            <button 
-              onClick={onToggleComplete}
-              className={`ml-4 ${isLessonCompleted ? 'text-green-500' : 'text-gray-400'}`}
-            >
-              <CheckCircle className="h-6 w-6" />
-            </button>
-          )}
+            ) : (
+              <button onClick={() => router.back()} className="text-white mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+              </button>
+            )}
+            <Link href="/dashboard" className="text-gray-200 text-xl font-bold text-left">
+              ModernHuman
+            </Link>
+          </div>
+          <div className="flex items-center">
+            {isLessonPage && (
+              <button 
+                onClick={onToggleComplete}
+                className={`mr-4 ${isLessonCompleted ? 'text-green-500' : 'text-gray-400'}`}
+              >
+                <CheckCircle className="h-6 w-6" />
+              </button>
+            )}
+            {isSignedIn && (
+              <UserButton 
+                afterSignOutUrl="/" 
+                appearance={{ 
+                  elements: { 
+                    userButtonBox: "text-white" 
+                  } 
+                }} 
+              />
+            )}
+          </div>
         </header>
       )}
 
@@ -91,26 +105,6 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
           )}
         </div>
       </header>
-      
-      {isMobile && (
-        <footer className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 p-4 flex justify-between items-center z-50">
-          {isSignedIn && (
-            <Link href="/dashboard">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            </Link>
-          )}
-          <UserButton 
-            afterSignOutUrl="/" 
-            appearance={{ 
-              elements: { 
-                userButtonBox: "text-white" 
-              } 
-            }} 
-          />
-        </footer>
-      )}
     </>
   )
 }
