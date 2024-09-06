@@ -25,6 +25,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isDashboardPage = pathname === '/dashboard';
 
   return (
+<<<<<<< HEAD
     <ProgressProvider>
       <ScrollToTop />
       {isDashboardOrRelated ? (
@@ -45,6 +46,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         </>
       )}
     </ProgressProvider>
+=======
+    <>
+      <ScrollToTop />
+      <ProgressProvider>
+        {/* Rest of the content */}
+      </ProgressProvider>
+    </>
+>>>>>>> feature
   )
 }
 
@@ -64,7 +73,7 @@ export default function RootLayout({
       <html lang="en" style={{ scrollBehavior: 'auto' }}>
         <body className={inter.className}>
           <Suspense fallback={<div>Loading...</div>}>
-            <LayoutContent>{children}</LayoutContent>
+            <LayoutContent key={pathname}>{children}</LayoutContent>
           </Suspense>
         </body>
       </html>
