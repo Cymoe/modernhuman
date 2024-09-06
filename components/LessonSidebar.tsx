@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { useProgress } from "@/app/contexts/ProgressContext"
 import { CheckCircle } from 'lucide-react'
 import { ProgressWithText } from "@/components/ui/progress-with-text"
+import { useState, useEffect } from 'react'
 
 type LessonSidebarProps = {
   moduleId: number
@@ -12,10 +13,19 @@ type LessonSidebarProps = {
   moduleTitle: string
   onLessonClick?: (lessonId: number) => void
   currentLessonId: number | null
+  className?: string
 }
 
-export default function LessonSidebar({ moduleId, lessons, moduleTitle, onLessonClick, currentLessonId }: LessonSidebarProps) {
+export default function LessonSidebar({ moduleId, lessons, moduleTitle, onLessonClick, currentLessonId, className = '' }: LessonSidebarProps) {
   const { progress } = useProgress()
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
+    checkIfMobile()
+    window.addEventListener('resize', checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
+  }, [])
 
   const calculateProgressPercentage = () => {
     const moduleProgress = progress[moduleId.toString()] || {}
@@ -24,8 +34,8 @@ export default function LessonSidebar({ moduleId, lessons, moduleTitle, onLesson
   }
 
   return (
-    <div className="w-full lg:w-96 bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl lg:fixed">
-      <div className="p-4 mt-16">
+    <div className={`w-full lg:w-96 bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl lg:fixed ${className}`}>
+      <div className={`p-4 ${isMobile ? 'mt-12' : 'mt-4'}`}>
         <h2 className="text-xl font-bold text-gray-300 mb-2">{moduleTitle}</h2>
         <ProgressWithText value={calculateProgressPercentage()} className="mt-2 mb-4" />
       </div>

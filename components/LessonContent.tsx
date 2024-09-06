@@ -6,9 +6,11 @@ interface LessonContentProps {
     content: string;
     videoUrl?: string;
   };
+  isCompleted: boolean;
+  onComplete: () => void;
 }
 
-const LessonContent: React.FC<LessonContentProps> = ({ lesson }) => {
+const LessonContent: React.FC<LessonContentProps> = ({ lesson, isCompleted, onComplete }) => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">{lesson.title}</h1>
@@ -30,6 +32,14 @@ const LessonContent: React.FC<LessonContentProps> = ({ lesson }) => {
           <p key={index} className="mb-4">{paragraph}</p>
         ))}
       </div>
+      <button 
+        onClick={onComplete}
+        className={`mt-4 px-4 py-2 rounded ${
+          isCompleted ? 'bg-green-500' : 'bg-blue-500'
+        } text-white`}
+      >
+        {isCompleted ? 'Mark as Incomplete' : 'Mark as Complete'}
+      </button>
     </div>
   );
 };

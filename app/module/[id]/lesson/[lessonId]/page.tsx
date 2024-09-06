@@ -104,24 +104,24 @@ export default function LessonPage() {
   )
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      <LessonSidebar 
-        moduleId={moduleId} 
-        lessons={moduleData.lessons} 
-        moduleTitle={moduleData.title}
-        onLessonClick={handleLessonClick}
-        currentLessonId={currentLessonId}
-      />
-      {(!isMobile || currentLessonId) && (
-        <div className="flex-1 p-6 lg:ml-96">
-          {lesson ? renderLessonContent() : (
-            <div className="text-center">
-              <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
-              <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
-            </div>
-          )}
-        </div>
+    <div className={`flex flex-col ${isMobile ? 'mt-5' : 'mt-16'}`}>
+      {!isMobile && (
+        <LessonSidebar 
+          moduleId={moduleId} 
+          lessons={moduleData.lessons} 
+          moduleTitle={moduleData.title}
+          onLessonClick={handleLessonClick}
+          currentLessonId={currentLessonId}
+        />
       )}
+      <div className={`flex-1 p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
+        {lesson ? renderLessonContent() : (
+          <div className="text-center">
+            <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
+            <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
