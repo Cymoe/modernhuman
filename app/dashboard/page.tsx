@@ -10,9 +10,9 @@ export default function DashboardPage() {
   const { progress } = useProgress()
 
   return (
-    <div>
+    <div className="pt-16"> {/* Added top padding here */}
       {isSignedIn ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2 md:p-6">
           {modules.map((module) => {
             const moduleProgress = progress[module.id.toString()] || {}
             const completedLessons = Object.values(moduleProgress).filter(Boolean).length

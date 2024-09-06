@@ -111,7 +111,7 @@ export default function LessonPage() {
         isLessonCompleted={isCompleted} 
         onToggleComplete={handleComplete}
       />
-      <div className={`flex flex-col ${isMobile ? 'mt-5' : 'mt-16'}`}>
+      <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
         {!isMobile && (
           <LessonSidebar 
             moduleId={moduleId} 
@@ -121,7 +121,7 @@ export default function LessonPage() {
             currentLessonId={currentLessonId}
           />
         )}
-        <div className={`flex-1 p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
+        <div className={`flex-1 p-2 md:p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
           {lesson ? renderLessonContent() : (
             <div className="text-center">
               <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
