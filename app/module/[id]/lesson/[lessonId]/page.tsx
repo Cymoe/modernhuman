@@ -162,13 +162,7 @@ export default function LessonPage() {
   return (
     <>
       <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
-        {isMobile ? (
-          <MobileModuleView
-            key={moduleId}
-            module={mobileModuleData}
-            onLessonClick={handleLessonClick}
-          />
-        ) : (
+        {!isMobile && (
           <LessonSidebar 
             moduleId={moduleId} 
             lessons={moduleData.lessons} 
