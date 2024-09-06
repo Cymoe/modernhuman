@@ -26,7 +26,8 @@ export default function ModuleCard({ id, title, description, color, progressPerc
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isMobile) {
-      // Allow default link behavior, but scroll to top after a short delay
+      e.preventDefault()
+      window.location.href = linkHref
       setTimeout(() => {
         window.scrollTo(0, 0)
       }, 100)
