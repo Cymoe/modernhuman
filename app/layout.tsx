@@ -7,7 +7,7 @@ import { ProgressProvider } from './contexts/ProgressContext'
 import Header from '../components/Header'
 import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,6 +18,11 @@ const onToggleComplete = () => {
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    // Force scroll to top on route change
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const isDashboardOrRelated = pathname?.startsWith('/dashboard') || pathname?.includes('/module/');
   const isDashboardPage = pathname === '/dashboard';

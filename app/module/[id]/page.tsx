@@ -18,10 +18,6 @@ export default function ModulePage({ params }: { params: { id: string } }) {
     const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
     checkIfMobile()
     window.addEventListener('resize', checkIfMobile)
-    
-    // Force scroll to top on component mount
-    window.scrollTo(0, 0)
-    
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
