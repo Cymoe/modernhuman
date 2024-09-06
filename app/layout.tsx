@@ -7,6 +7,7 @@ import { ProgressProvider } from './contexts/ProgressContext'
 import Header from '../components/Header'
 import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
+import { useScrollToTop } from './hooks/useScrollToTop';
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,12 +21,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const pathname = usePathname()
-  const isDashboardPage = pathname === '/dashboard'
-  const isDashboardOrRelated = pathname?.startsWith('/dashboard') || 
-                               pathname?.startsWith('/module') || 
-                               pathname?.startsWith('/lesson') || 
-                               pathname?.startsWith('/profile')
+  useScrollToTop();
+  const pathname = usePathname();
+
+  const isDashboardOrRelated = pathname?.startsWith('/dashboard') || pathname?.includes('/module/');
+  const isDashboardPage = pathname === '/dashboard';
 
   return (
     <ClerkProvider
