@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useEffect } from 'react'
+import React, { useMemo, useEffect, useRef } from 'react'
 import { Module } from '@/types/courseTypes'
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
@@ -13,6 +13,7 @@ interface Props {
 
 const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick }) => {
   const { progress, isLoading } = useProgress()
+  const componentRef = useRef<HTMLDivElement>(null)
 
   const { moduleProgress, progressPercentage } = useMemo(() => {
     const moduleProgress = progress[module.id.toString()] || {}
@@ -22,7 +23,9 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
   }, [progress, module.id, module.lessons.length])
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    if (componentRef.current) {
+      componentRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }, [])
 
   if (isLoading) {
@@ -30,7 +33,7 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
   }
 
   return (
-    <div className="w-full bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl">
+    <div ref={componentRef} className="w-full bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl">
       <div className="p-2 mt-[3rem]">
         <h2 className="text-xl font-bold text-gray-300 mb-2">{module.title}</h2>
         <ProgressWithText value={progressPercentage} text={`${Math.round(progressPercentage)}%`} className="mt-2 mb-4" />

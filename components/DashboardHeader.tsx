@@ -59,7 +59,7 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
           </div>
           <div className="flex items-center">
             {isSignedIn && (
-              <UserButton 
+              <UserButton  
                 afterSignOutUrl="/" 
                 appearance={{ 
                   elements: { 

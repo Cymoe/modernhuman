@@ -22,15 +22,19 @@ export default function ModuleCard({ id, title, description, color, progressPerc
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
-  useEffect(() => {
-    // Scroll to top after navigation
-    window.scrollTo(0, 0)
-  }, [])
-
   const linkHref = isMobile ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isMobile) {
+      // Allow default link behavior, but scroll to top after a short delay
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 100)
+    }
+  }
+
   return (
-    <Link href={linkHref} scroll={false} className="block h-full">
+    <Link href={linkHref} onClick={handleClick} className="block h-full">
       <Card className="bg-transparent border-zinc-700 sm:hover:scale-105 transition-transform h-full flex flex-col overflow-hidden rounded-none sm:rounded-xl">
         <div className="w-full h-48 bg-transparent border-b border-zinc-700" />
         <CardHeader className="p-6">
