@@ -55,6 +55,8 @@ export default function ModulePage({ params }: { params: { id: string } }) {
       <DashboardHeader 
         isLessonCompleted={false} // Replace with actual logic
         onToggleComplete={() => {}} // Replace with actual function
+        isModuleCompleted={false}
+        allLessonsCompleted={false}
       />
       {isMobile ? (
         <MobileModuleView

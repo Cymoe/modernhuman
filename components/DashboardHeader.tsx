@@ -1,57 +1,74 @@
 import Link from 'next/link'
-import { usePathname, useRouter, useParams } from 'next/navigation'
-import { useUser, UserButton } from "@clerk/nextjs"
+import { usePathname, useParams, useRouter } from 'next/navigation'
+import { UserButton, useUser } from "@clerk/nextjs"
 import { useState, useEffect } from 'react'
 import { CheckCircle } from 'lucide-react'
+import confetti from 'canvas-confetti';
 
 interface DashboardHeaderProps {
   isLessonCompleted: boolean;
   onToggleComplete: () => void;
+  isModuleCompleted: boolean;
+  allLessonsCompleted: boolean; // Add this new prop
 }
 
-export default function DashboardHeader({ isLessonCompleted, onToggleComplete }: DashboardHeaderProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const params = useParams()
-  const { isSignedIn, user } = useUser()
-  const [isMobile, setIsMobile] = useState(false)
-  
-  const isCoursesActive = pathname === '/dashboard' || pathname.includes('/module') || pathname.includes('/lesson')
-  const isDashboardPage = pathname === '/dashboard'
-  const isLessonPage = pathname.includes('/lesson')
+export default function DashboardHeader({ 
+  isLessonCompleted, 
+  onToggleComplete, 
+  isModuleCompleted,
+  allLessonsCompleted
+}: DashboardHeaderProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  const [confettiTriggered, setConfettiTriggered] = useState(false);
+
+  const pathname = usePathname();
+  const params = useParams();
+  const router = useRouter();
+  const { isSignedIn, user } = useUser();
+  const moduleId = params?.id as string;
+
+  const isDashboardPage = pathname === '/dashboard';
+  const isCoursesActive = isDashboardPage || pathname.startsWith('/module/');
+  const isCommunityActive = pathname === '/community';
 
   useEffect(() => {
-    const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
-    checkIfMobile()
-    window.addEventListener('resize', checkIfMobile)
-    return () => window.removeEventListener('resize', checkIfMobile)
-  }, [])
+    if (typeof window !== 'undefined') {
+      const checkIfMobile = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
 
-  const userButtonProps = {
-    afterSignOutUrl: "/",
-    showName: true,
-    appearance: {
-      elements: {
-        userButtonBox: {
-          display: "flex",
-          alignItems: "center",
-        },
-        userButtonOuterIdentifier: {
-          color: "rgb(75 85 99)",
-        },
-      },
-    },
-    userProfileMode: "navigation" as const,
-    userProfileUrl: "/user-profile",
-  }
+      checkIfMobile();
+      window.addEventListener('resize', checkIfMobile);
+
+      return () => window.removeEventListener('resize', checkIfMobile);
+    }
+  }, []);
 
   const handleBackClick = () => {
-    if (isLessonPage && params.id) {
-      router.push(`/module/${params.id}`)
-    } else {
-      router.push('/dashboard')
+    router.back();
+  };
+
+  useEffect(() => {
+    console.log('Props:', { isLessonCompleted, isModuleCompleted, allLessonsCompleted });
+  }, [isLessonCompleted, isModuleCompleted, allLessonsCompleted]);
+
+  useEffect(() => {
+    if (isModuleCompleted && allLessonsCompleted && !confettiTriggered) {
+      const moduleCompletionKey = `module_${moduleId}_completed`;
+      const isModuleAlreadyCompleted = localStorage.getItem(moduleCompletionKey);
+
+      if (!isModuleAlreadyCompleted) {
+        console.log('Triggering confetti');
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        setConfettiTriggered(true);
+        localStorage.setItem(moduleCompletionKey, 'true');
+      }
     }
-  }
+  }, [isModuleCompleted, allLessonsCompleted, confettiTriggered, moduleId]);
 
   return (
     <>
@@ -76,7 +93,12 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
             </Link>
           </div>
           <div className="flex items-center">
-            {isSignedIn && <UserButton {...userButtonProps} />}
+            {isSignedIn && (
+              <div className="flex items-center">
+                <span className="text-[rgb(75,85,99)] text-xs mr-2">{user?.firstName}</span>
+                <UserButton />
+              </div>
+            )}
           </div>
         </header>
       )}
@@ -91,16 +113,29 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
                 </Link>
               )}
               <nav className="flex items-center space-x-4">
-                <Link href="/dashboard" className={`hover:text-gray-300 relative ${isCoursesActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}>
+                <Link 
+                  href="/dashboard" 
+                  className={`hover:text-gray-300 relative ${isCoursesActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}
+                >
                   Courses
+                  {isCoursesActive && <div className="absolute bottom-[-18px] left-0 w-full h-[2px] bg-white"></div>}
                 </Link>
-                <Link href="/community" className={`hover:text-gray-300 relative ${pathname === '/community' ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}>
+                <Link 
+                  href="/community" 
+                  className={`hover:text-gray-300 relative ${isCommunityActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}
+                >
                   Community
+                  {isCommunityActive && <div className="absolute bottom-[-18px] left-0 w-full h-[2px] bg-white"></div>}
                 </Link>
               </nav>
             </div>
           </div>
-          {!isMobile && <UserButton {...userButtonProps} />}
+          {!isMobile && isSignedIn && (
+            <div className="flex items-center">
+              <span className="text-[rgb(75,85,99)] text-xs mr-2">{`${user?.firstName} ${user?.lastName}`}</span>
+              <UserButton />
+            </div>
+          )}
         </div>
       </header>
     </>

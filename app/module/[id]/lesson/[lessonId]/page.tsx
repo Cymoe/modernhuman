@@ -14,6 +14,7 @@ import { calculateProgress } from '@/app/utils/progressCalculator';
 import { useScrollToTop } from '@/app/hooks/useScrollToTop'
 import Link from 'next/link'
 import MobileModuleView from "@/components/MobileModuleView"
+import { Lesson, Module } from '@/types/courseTypes' // Adjust the import path as needed
 
 export default function LessonPage() {
   useScrollToTop()
@@ -27,6 +28,17 @@ export default function LessonPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [showLessonContent, setShowLessonContent] = useState(!!currentLessonId)
+  const [lessonContent, setLessonContent] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [lesson, setLesson] = useState<Lesson | null>(null)
+  const [module, setModule] = useState<Module | null>(null)
+  const [isClient, setIsClient] = useState(false)
+  const [isAllLessonsCompleted, setIsAllLessonsCompleted] = useState(false)
+  const [isModuleCompleted, setIsModuleCompleted] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -36,9 +48,26 @@ export default function LessonPage() {
     }
     checkIfMobile()
     window.addEventListener('resize', checkIfMobile)
-
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [currentLessonId])
+
+  const currentModule = modules.find((module) => module.id === moduleId);
+
+  useEffect(() => {
+    if (progress && moduleId && currentModule) {
+      const allCompleted = currentModule.lessons.every((lesson) =>
+        progress[moduleId.toString()]?.[lesson.id.toString()] === true
+      );
+      setIsModuleCompleted(allCompleted)
+    }
+  }, [progress, moduleId, currentModule])
+
+  useEffect(() => {
+    if (lesson) {
+      setLessonContent(lesson.content)
+      setIsLoading(false)
+    }
+  }, [lesson])
 
   let moduleData = modules.find(m => m.id === moduleId)
   if (!moduleData) return <div>Module not found</div>
@@ -55,15 +84,23 @@ export default function LessonPage() {
     })),
   }
 
-  const lesson = currentLessonId ? moduleData.lessons.find(l => l.id === currentLessonId) : null
+  const currentLesson = currentLessonId ? moduleData.lessons.find(l => l.id === currentLessonId) : null
 
   const isCompleted = currentLessonId
     ? progress[moduleId.toString()]?.[currentLessonId.toString()] || false
     : false
 
   const handleComplete = () => {
-    if (currentLessonId) {
-      updateProgress(moduleId.toString(), currentLessonId.toString(), !isCompleted)
+    const newCompletionStatus = !progress[moduleId.toString()]?.[currentLessonId?.toString() ?? ''];
+    updateProgress(moduleId.toString(), currentLessonId?.toString() ?? '', newCompletionStatus);
+    
+    // Check if this was the last lesson to complete the module
+    if (newCompletionStatus && currentModule) {
+      const allCompleted = currentModule.lessons.every(lesson => 
+        lesson.id === currentLessonId || progress[moduleId.toString()]?.[lesson.id.toString()]
+      );
+      setIsAllLessonsCompleted(allCompleted);
+      setIsModuleCompleted(allCompleted);
     }
   }
 
@@ -77,8 +114,6 @@ export default function LessonPage() {
     }, 100)
   }
 
-  const currentModule = modules.find(m => m.id === moduleId)
-  const currentLesson = currentModule?.lessons.find(l => l.id === currentLessonId)
   const nextLesson = currentModule?.lessons.find(l => l.id === (currentLessonId || 0) + 1)
 
   const handleNextLesson = () => {
@@ -94,7 +129,7 @@ export default function LessonPage() {
   const renderLessonContent = () => (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-gray-300 text-base md:text-2xl font-bold">{lesson?.title}</h1>
+        <h1 className="text-gray-300 text-base md:text-2xl font-bold">{currentLesson?.title}</h1>
         <button
           onClick={handleComplete}
           className={`rounded-full ${isCompleted ? 'text-green-500' : 'text-gray-400'} hover:text-green-500`}
@@ -106,8 +141,8 @@ export default function LessonPage() {
         {!isPlaying ? (
           <>
             <Image
-              src={`https://img.youtube.com/vi/${getYouTubeId(lesson?.videoUrl ?? '')}/maxresdefault.jpg`}
-              alt={lesson?.title ?? ''}
+              src={`https://img.youtube.com/vi/${getYouTubeId(currentLesson?.videoUrl ?? '')}/maxresdefault.jpg`}
+              alt={currentLesson?.title ?? ''}
               layout="fill"
               objectFit="cover"
               className="rounded-lg"
@@ -121,8 +156,8 @@ export default function LessonPage() {
           </>
         ) : (
           <iframe
-            src={`${lesson?.videoUrl}?autoplay=1`}
-            title={lesson?.title}
+            src={`${currentLesson?.videoUrl}?autoplay=1`}
+            title={currentLesson?.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             className="w-full h-full rounded-lg"
@@ -148,9 +183,9 @@ export default function LessonPage() {
         )}
       </div>
       <div className="prose max-w-none mb-6">
-        {lesson?.content.split('. ').map((sentence, index) => (
+        {currentLesson?.content.split('. ').map((sentence, index) => (
           <p key={index} className="mb-4 text-lg text-gray-600">
-            {sentence.trim() + (index < lesson.content.split('. ').length - 1 ? '.' : '')}
+            {sentence.trim() + (index < currentLesson.content.split('. ').length - 1 ? '.' : '')}
           </p>
         ))}
       </div>
@@ -158,6 +193,10 @@ export default function LessonPage() {
   )
 
   const totalLessons = moduleData.lessons.length
+
+  if (!currentLesson || !moduleData) {
+    return <div>Loading...</div>
+  }
 
   return (
     <>
@@ -175,7 +214,7 @@ export default function LessonPage() {
           />
         )}
         <div className={`flex-1 p-2 md:p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
-          {lesson ? renderLessonContent() : (
+          {currentLesson ? renderLessonContent() : (
             <div className="text-center">
               <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
               <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
@@ -183,6 +222,12 @@ export default function LessonPage() {
           )}
         </div>
       </div>
+      <DashboardHeader 
+        isLessonCompleted={!!progress[moduleId.toString()]?.[currentLessonId?.toString() ?? '']}
+        onToggleComplete={handleComplete}
+        isModuleCompleted={isModuleCompleted}
+        allLessonsCompleted={isAllLessonsCompleted}
+      />
     </>
   )
 }
