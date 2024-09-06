@@ -10,6 +10,11 @@ import { usePathname } from 'next/navigation'
 
 const inter = Inter({ subsets: ["latin"] })
 
+const isLessonCompleted = false; // or some state value
+const onToggleComplete = () => {
+  // Function to toggle lesson completion
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -35,7 +40,7 @@ export default function RootLayout({
           <ProgressProvider>
             {isDashboardOrRelated ? (
               <div className="flex flex-col bg-black min-h-screen text-white">
-                <DashboardHeader />
+                <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
                 <main className="flex-grow mt-16">
                   <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-6' : 'p-6'}`}>
                     {children}

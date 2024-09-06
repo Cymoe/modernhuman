@@ -9,6 +9,7 @@ import { CheckCircle, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import { Play } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import DashboardHeader from "@/components/DashboardHeader"
 
 export default function LessonPage() {
   const params = useParams()
@@ -38,12 +39,13 @@ export default function LessonPage() {
 
   const lesson = currentLessonId ? moduleData.lessons.find(l => l.id === currentLessonId) : null
 
-  const isCompleted = currentLessonId ? progress[moduleId.toString()]?.[currentLessonId.toString()] || false : false
+  const isCompleted = currentLessonId
+    ? progress[moduleId.toString()]?.[currentLessonId.toString()] || false
+    : false
 
   const handleComplete = () => {
     if (currentLessonId) {
-      const newStatus = !isCompleted
-      updateProgress(moduleId.toString(), currentLessonId.toString(), newStatus)
+      updateProgress(moduleId.toString(), currentLessonId.toString(), !isCompleted)
     }
   }
 
@@ -56,15 +58,15 @@ export default function LessonPage() {
   const renderLessonContent = () => (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-gray-300 text-3xl font-bold">{lesson?.title}</h1>
-        <Button
-          onClick={handleComplete}
-          variant="ghost"
-          size="icon"
-          className={`rounded-full ${isCompleted ? 'text-green-500' : 'text-gray-400'} hover:text-green-500`}
-        >
-          <CheckCircle className="h-6 w-6" />
-        </Button>
+        <h1 className="text-gray-300 text-base md:text-2xl font-bold">{lesson?.title}</h1>
+        {!isMobile && (
+          <button
+            onClick={handleComplete}
+            className={`rounded-full ${isCompleted ? 'text-green-500' : 'text-gray-400'} hover:text-green-500`}
+          >
+            <CheckCircle className="h-6 w-6" />
+          </button>
+        )}
       </div>
       <div className="relative w-full aspect-video mb-6 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-4xl mx-auto">
         {!isPlaying ? (
@@ -104,25 +106,31 @@ export default function LessonPage() {
   )
 
   return (
-    <div className={`flex flex-col ${isMobile ? 'mt-5' : 'mt-16'}`}>
-      {!isMobile && (
-        <LessonSidebar 
-          moduleId={moduleId} 
-          lessons={moduleData.lessons} 
-          moduleTitle={moduleData.title}
-          onLessonClick={handleLessonClick}
-          currentLessonId={currentLessonId}
-        />
-      )}
-      <div className={`flex-1 p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
-        {lesson ? renderLessonContent() : (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
-            <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
-          </div>
+    <>
+      <DashboardHeader 
+        isLessonCompleted={isCompleted} 
+        onToggleComplete={handleComplete}
+      />
+      <div className={`flex flex-col ${isMobile ? 'mt-5' : 'mt-16'}`}>
+        {!isMobile && (
+          <LessonSidebar 
+            moduleId={moduleId} 
+            lessons={moduleData.lessons} 
+            moduleTitle={moduleData.title}
+            onLessonClick={handleLessonClick}
+            currentLessonId={currentLessonId}
+          />
         )}
+        <div className={`flex-1 p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
+          {lesson ? renderLessonContent() : (
+            <div className="text-center">
+              <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
+              <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 function getYouTubeId(url: string) {

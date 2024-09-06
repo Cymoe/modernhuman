@@ -2,8 +2,14 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useUser, UserButton } from "@clerk/nextjs"
 import { useState, useEffect } from 'react'
+import { CheckCircle } from 'lucide-react'
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  isLessonCompleted: boolean;
+  onToggleComplete: () => void;
+}
+
+export default function DashboardHeader({ isLessonCompleted, onToggleComplete }: DashboardHeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, isSignedIn } = useUser()
@@ -11,6 +17,7 @@ export default function DashboardHeader() {
   
   const isCoursesActive = pathname === '/dashboard' || pathname.includes('/module') || pathname.includes('/lesson')
   const isDashboardPage = pathname === '/dashboard'
+  const isLessonPage = pathname.includes('/lesson')
 
   useEffect(() => {
     const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
@@ -39,6 +46,14 @@ export default function DashboardHeader() {
           <Link href="/dashboard" className="text-gray-200 text-xl font-bold flex-grow text-left">
             ModernHuman
           </Link>
+          {isLessonPage && (
+            <button 
+              onClick={onToggleComplete}
+              className={`ml-4 ${isLessonCompleted ? 'text-green-500' : 'text-gray-400'}`}
+            >
+              <CheckCircle className="h-6 w-6" />
+            </button>
+          )}
         </header>
       )}
 
