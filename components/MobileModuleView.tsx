@@ -6,13 +6,15 @@ import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
 import { useProgress } from "@/app/contexts/ProgressContext"
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface Props {
-  module: Module
-  onLessonClick?: (lessonId: number) => void // Make it optional
+  module: Module;
+  onLessonClick: (lessonId: number) => void;
 }
 
 const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick }) => {
+  const router = useRouter()
   const { progress, isLoading } = useProgress()
 
   const { moduleProgress, progressPercentage } = useMemo(() => {
@@ -24,15 +26,7 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module, onLessonClick })
 
   const handleLessonClick = (e: React.MouseEvent<HTMLAnchorElement>, lessonId: number) => {
     e.preventDefault()
-    if (onLessonClick) {
-      onLessonClick(lessonId)
-    } else {
-      const href = `/module/${module.id}/lesson/${lessonId}`
-      window.location.href = href
-      setTimeout(() => {
-        window.scrollTo(0, 0)
-      }, 100)
-    }
+    onLessonClick(lessonId)
   }
 
   if (isLoading) {

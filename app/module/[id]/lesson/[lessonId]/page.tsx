@@ -13,6 +13,7 @@ import DashboardHeader from "@/components/DashboardHeader"
 import { calculateProgress } from '@/app/utils/progressCalculator';
 import { useScrollToTop } from '@/app/hooks/useScrollToTop'
 import Link from 'next/link'
+import MobileModuleView from "@/components/MobileModuleView"
 
 export default function LessonPage() {
   useScrollToTop()
@@ -42,6 +43,18 @@ export default function LessonPage() {
   let moduleData = modules.find(m => m.id === moduleId)
   if (!moduleData) return <div>Module not found</div>
 
+  const completedLessons = progress[moduleId.toString()] || {}
+  const progressPercentage = (Object.values(completedLessons).filter(Boolean).length / moduleData.lessons.length) * 100
+
+  const mobileModuleData = {
+    ...moduleData,
+    progress: progressPercentage,
+    lessons: moduleData.lessons.map(lesson => ({
+      ...lesson,
+      completed: completedLessons[lesson.id.toString()] || false
+    })),
+  }
+
   const lesson = currentLessonId ? moduleData.lessons.find(l => l.id === currentLessonId) : null
 
   const isCompleted = currentLessonId
@@ -57,7 +70,11 @@ export default function LessonPage() {
   const handleLessonClick = (lessonId: number) => {
     setCurrentLessonId(lessonId)
     setShowLessonContent(true)
-    router.push(`/module/${moduleId}/lesson/${lessonId}`)
+    const href = `/module/${moduleId}/lesson/${lessonId}`
+    router.push(href)
+    setTimeout(() => {
+      window.scrollTo(0, 0)
+    }, 100)
   }
 
   const currentModule = modules.find(m => m.id === moduleId)
@@ -145,7 +162,13 @@ export default function LessonPage() {
   return (
     <>
       <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
-        {!isMobile && (
+        {isMobile ? (
+          <MobileModuleView
+            key={moduleId}
+            module={mobileModuleData}
+            onLessonClick={handleLessonClick}
+          />
+        ) : (
           <LessonSidebar 
             moduleId={moduleId} 
             lessons={moduleData.lessons} 
