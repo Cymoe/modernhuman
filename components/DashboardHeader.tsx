@@ -13,7 +13,7 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
   const pathname = usePathname()
   const router = useRouter()
   const params = useParams()
-  const { isSignedIn } = useUser()
+  const { isSignedIn, user } = useUser()
   const [isMobile, setIsMobile] = useState(false)
   
   const isCoursesActive = pathname === '/dashboard' || pathname.includes('/module') || pathname.includes('/lesson')
@@ -26,6 +26,21 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
     window.addEventListener('resize', checkIfMobile)
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
+
+  const userButtonProps = {
+    afterSignOutUrl: "/",
+    showName: true,
+    appearance: {
+      elements: {
+        userButtonBox: {
+          display: "flex",
+          alignItems: "center",
+        },
+      },
+    },
+    userProfileMode: "navigation" as const,
+    userProfileUrl: "/user-profile",
+  }
 
   const handleBackClick = () => {
     if (isLessonPage && params.id) {
@@ -58,23 +73,7 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
             </Link>
           </div>
           <div className="flex items-center">
-            {isSignedIn && (
-              <UserButton 
-                afterSignOutUrl="/" 
-                showName={true}
-                appearance={{
-                  elements: {
-                    userButtonBox: {
-                      display: "flex",
-                      alignItems: "center",
-                    },
-                    userButtonOuterIdentifier: {
-                      display: "none",
-                    },
-                  }
-                }} 
-              />
-            )}
+            {isSignedIn && <UserButton {...userButtonProps} />}
           </div>
         </header>
       )}
@@ -98,16 +97,7 @@ export default function DashboardHeader({ isLessonCompleted, onToggleComplete }:
               </nav>
             </div>
           </div>
-          {!isMobile && (
-            <UserButton 
-              afterSignOutUrl="/" 
-              appearance={{ 
-                elements: { 
-                  userButtonBox: "text-white" 
-                } 
-              }} 
-            />
-          )}
+          {!isMobile && <UserButton {...userButtonProps} />}
         </div>
       </header>
     </>
