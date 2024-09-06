@@ -28,7 +28,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     <>
       <ScrollToTop />
       <ProgressProvider>
-        {/* Rest of the content */}
+        {isDashboardOrRelated ? (
+          <div className="flex flex-col bg-black min-h-screen text-white">
+            <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
+            <main className="flex-grow mt-16">
+              <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-2' : 'p-2'}`}>
+                {children}
+              </div>
+            </main>
+            <ScrollToTopButton />
+          </div>
+        ) : (
+          <>
+            <Header />
+            <main>{children}</main>
+            <ScrollToTopButton />
+          </>
+        )}
       </ProgressProvider>
     </>
   )
@@ -39,6 +55,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname(); // Add this line
+
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
