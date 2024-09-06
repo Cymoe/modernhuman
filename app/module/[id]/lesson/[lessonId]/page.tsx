@@ -10,6 +10,7 @@ import Image from 'next/image'
 import { Play } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import DashboardHeader from "@/components/DashboardHeader"
+import { calculateProgress } from '@/app/utils/progressCalculator';
 
 export default function LessonPage() {
   const params = useParams()
@@ -107,13 +108,10 @@ export default function LessonPage() {
     </>
   )
 
+  const totalLessons = moduleData.lessons.length
+
   return (
     <>
-      {/* Remove or comment out the DashboardHeader */}
-      {/* <DashboardHeader 
-        isLessonCompleted={isCompleted} 
-        onToggleComplete={handleComplete}
-      /> */}
       <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
         {!isMobile && (
           <LessonSidebar 
@@ -122,6 +120,9 @@ export default function LessonPage() {
             moduleTitle={moduleData.title}
             onLessonClick={handleLessonClick}
             currentLessonId={currentLessonId}
+            progressPercentage={currentLessonId !== null 
+              ? calculateProgress(currentLessonId, totalLessons)
+              : 0}
           />
         )}
         <div className={`flex-1 p-2 md:p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>

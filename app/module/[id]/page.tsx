@@ -7,6 +7,15 @@ import { useState, useEffect } from 'react'
 import MobileModuleView from "@/components/MobileModuleView"
 import { useProgress } from "@/app/contexts/ProgressContext"
 
+interface LessonSidebarProps {
+  moduleId: number;
+  lessons: { id: number; title: string; videoUrl: string; content: string; resources: { title: string; url: string; }[]; }[];
+  moduleTitle: string;
+  onLessonClick: (lessonId: number) => void;
+  currentLessonId: number | null;
+  progressPercentage: number; // Add this line
+}
+
 export default function ModulePage({ params }: { params: { id: string } }) {
   const { progress } = useProgress();
   const router = useRouter()

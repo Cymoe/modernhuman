@@ -14,6 +14,7 @@ type LessonSidebarProps = {
   onLessonClick?: (lessonId: number) => void
   currentLessonId: number | null
   className?: string
+  progressPercentage: number
 }
 
 const LessonSidebar = React.memo(({ moduleId, lessons, moduleTitle, onLessonClick, currentLessonId, className = '' }: LessonSidebarProps) => {
