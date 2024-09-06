@@ -9,6 +9,7 @@ import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
 import { Suspense } from 'react'
 import ScrollToTopButton from '../components/ScrollToTopButton'
+import { ScrollToTop } from '../components/ScrollToTop'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,25 +25,12 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const isDashboardPage = pathname === '/dashboard';
 
   return (
-    <ProgressProvider>
-      {isDashboardOrRelated ? (
-        <div className="flex flex-col bg-black min-h-screen text-white">
-          <DashboardHeader isLessonCompleted={isLessonCompleted} onToggleComplete={onToggleComplete} />
-          <main className="flex-grow mt-16">
-            <div className={`max-w-[1075px] mx-auto ${isDashboardPage ? 'p-0 sm:p-2' : 'p-2'}`}>
-              {children}
-            </div>
-          </main>
-          <ScrollToTopButton />
-        </div>
-      ) : (
-        <>
-          <Header />
-          <main>{children}</main>
-          <ScrollToTopButton />
-        </>
-      )}
-    </ProgressProvider>
+    <>
+      <ScrollToTop />
+      <ProgressProvider>
+        {/* Rest of the content */}
+      </ProgressProvider>
+    </>
   )
 }
 
@@ -59,10 +47,10 @@ export default function RootLayout({
       afterSignInUrl="/dashboard"
       afterSignUpUrl="/dashboard"
     >
-      <html lang="en">
+      <html lang="en" style={{ scrollBehavior: 'auto' }}>
         <body className={inter.className}>
           <Suspense fallback={<div>Loading...</div>}>
-            <LayoutContent>{children}</LayoutContent>
+            <LayoutContent key={pathname}>{children}</LayoutContent>
           </Suspense>
         </body>
       </html>
