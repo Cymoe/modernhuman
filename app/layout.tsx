@@ -7,8 +7,8 @@ import { ProgressProvider } from './contexts/ProgressContext'
 import Header from '../components/Header'
 import DashboardHeader from '../components/DashboardHeader'
 import { usePathname } from 'next/navigation'
-import { Suspense, useEffect } from 'react'
-import { useScrollToTop } from './hooks/useScrollToTop'
+import { Suspense } from 'react'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,7 +19,6 @@ const onToggleComplete = () => {
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  useScrollToTop();
 
   const isDashboardOrRelated = pathname?.startsWith('/dashboard') || pathname?.includes('/module/');
   const isDashboardPage = pathname === '/dashboard';
@@ -34,11 +33,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               {children}
             </div>
           </main>
+          <ScrollToTopButton />
         </div>
       ) : (
         <>
           <Header />
           <main>{children}</main>
+          <ScrollToTopButton />
         </>
       )}
     </ProgressProvider>
