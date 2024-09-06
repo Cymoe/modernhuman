@@ -1,36 +1,19 @@
-import * as React from "react"
-import * as ProgressPrimitive from "@radix-ui/react-progress"
+import React from 'react'
+import { Progress } from './progress'
 
-import { cn } from "@/lib/utils"
+interface ProgressWithTextProps {
+  value: number
+  text: string
+  className?: string
+}
 
-const ProgressWithText = React.forwardRef<
-  React.ElementRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & {
-    bgColor?: string
-    fillColor?: string
-  }
->(({ className, value, bgColor, fillColor, ...props }, ref) => (
-  <ProgressPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative h-4 w-full overflow-hidden rounded-full",
-      "bg-zinc-800",
-      className
-    )}
-    {...props}
-  >
-    <ProgressPrimitive.Indicator
-      className={cn(
-        "h-full flex-1 transition-all",
-        "bg-green-500" // Changed from bg-white to bg-green-500
-      )}
-      style={{ width: `${value}%` }}
-    />
-    <div className="absolute inset-0 flex items-center pl-2">
-      <span className="text-xs font-bold text-zinc-800">{Math.round(value || 0)}%</span>
+export const ProgressWithText: React.FC<ProgressWithTextProps> = ({ value, text, className }) => {
+  return (
+    <div className={`relative ${className}`}>
+      <Progress value={value} className="h-4" /> {/* Changed from h-6 to h-4 */}
+      <div className="absolute inset-y-0 left-0 flex items-center pl-2">
+        <span className="text-black text-xs font-medium">{text}</span> {/* Changed from text-sm to text-xs */}
+      </div>
     </div>
-  </ProgressPrimitive.Root>
-))
-ProgressWithText.displayName = ProgressPrimitive.Root.displayName
-
-export { ProgressWithText }
+  )
+}

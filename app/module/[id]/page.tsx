@@ -44,7 +44,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
     <div className="flex flex-col md:flex-row h-full">
       {isMobile ? (
         <MobileModuleView 
-          key={moduleId}  // Add this line
+          key={moduleId}
           module={mobileModuleData} 
           onLessonClick={handleLessonClick}
         />
@@ -55,6 +55,7 @@ export default function ModulePage({ params }: { params: { id: string } }) {
           moduleTitle={moduleData.title}
           onLessonClick={handleLessonClick}
           currentLessonId={null}
+          progressPercentage={progressPercentage}
         />
       )}
     </div>

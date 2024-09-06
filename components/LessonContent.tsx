@@ -1,16 +1,26 @@
 import React from 'react';
+import { useProgress } from "@/app/contexts/ProgressContext"
 
 interface LessonContentProps {
   lesson: {
+    id: string;
     title: string;
     content: string;
     videoUrl?: string;
   };
+  moduleId: string;
   isCompleted: boolean;
   onComplete: () => void;
 }
 
-const LessonContent: React.FC<LessonContentProps> = ({ lesson, isCompleted, onComplete }) => {
+const LessonContent: React.FC<LessonContentProps> = ({ lesson, moduleId, isCompleted, onComplete }) => {
+  const { updateProgress } = useProgress()
+
+  const handleComplete = () => {
+    updateProgress(moduleId, lesson.id, !isCompleted)
+    onComplete()
+  }
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">{lesson.title}</h1>
@@ -33,7 +43,7 @@ const LessonContent: React.FC<LessonContentProps> = ({ lesson, isCompleted, onCo
         ))}
       </div>
       <button 
-        onClick={onComplete}
+        onClick={handleComplete}
         className={`mt-4 px-4 py-2 rounded ${
           isCompleted ? 'bg-green-500' : 'bg-blue-500'
         } text-white`}

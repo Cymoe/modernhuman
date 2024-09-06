@@ -35,7 +35,7 @@ export default function ModuleCard({ id, title, description, color, progressPerc
           <p className="text-sm text-zinc-400 mt-2 line-clamp-3">{description}</p>
         </CardHeader>
         <CardContent className="mt-auto p-6">
-          <ProgressWithText value={progressPercentage} className="mt-4" />
+          <ProgressWithText value={progressPercentage} text={`${Math.round(progressPercentage)}%`} className="mt-4" />
         </CardContent>
       </Card>
     </Link>
