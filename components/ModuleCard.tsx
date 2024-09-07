@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 
@@ -14,7 +13,6 @@ interface ModuleCardProps {
 }
 
 const ModuleCard = React.memo(function ModuleCard({ id, title, description, color, progressPercentage, lessons }: ModuleCardProps) {
-  const router = useRouter()
   const isMobileRef = useRef(false)
 
   useEffect(() => {
@@ -28,16 +26,15 @@ const ModuleCard = React.memo(function ModuleCard({ id, title, description, colo
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     const href = isMobileRef.current ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
-    router.prefetch(href)
 
     if (isMobileRef.current) {
       e.preventDefault()
-      requestAnimationFrame(() => {
+      window.location.href = href
+      setTimeout(() => {
         window.scrollTo(0, 0)
-        router.push(href)
-      })
+      }, 100)
     }
-  }, [id, lessons, router])
+  }, [id, lessons])
 
   const href = isMobileRef.current ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
 
