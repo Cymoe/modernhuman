@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProgressWithText } from "@/components/ui/progress-with-text"
@@ -25,17 +26,23 @@ const ModuleCard = React.memo(function ModuleCard({ id, title, description, colo
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault()
+  const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     const href = isMobileRef.current ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
     router.prefetch(href)
-    requestAnimationFrame(() => {
-      router.push(href)
-    })
+
+    if (isMobileRef.current) {
+      e.preventDefault()
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0)
+        router.push(href)
+      })
+    }
   }, [id, lessons, router])
 
+  const href = isMobileRef.current ? `/module/${id}` : `/module/${id}/lesson/${lessons[0].id}`
+
   return (
-    <div onClick={handleClick} className="cursor-pointer block h-full">
+    <Link href={href} onClick={handleClick} className="block h-full">
       <Card className="bg-transparent border-zinc-700 sm:hover:scale-105 transition-transform h-full flex flex-col overflow-hidden rounded-none sm:rounded-xl">
         <div className="w-full h-48 bg-transparent border-b border-zinc-700" />
         <CardHeader className="p-6">
@@ -48,7 +55,7 @@ const ModuleCard = React.memo(function ModuleCard({ id, title, description, colo
           <ProgressWithText value={progressPercentage} text={`${Math.round(progressPercentage)}%`} className="mt-4" />
         </CardContent>
       </Card>
-    </div>
+    </Link>
   )
 })
 
