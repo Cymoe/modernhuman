@@ -45,7 +45,18 @@ export default function DashboardHeader({
   }, []);
 
   const handleBackClick = () => {
-    router.back();
+    const pathSegments = pathname.split('/').filter(Boolean)
+    
+    if (pathSegments.length > 2 && pathSegments[0] === 'module') {
+      // If we're in a lesson, go back to the module page
+      router.push(`/module/${pathSegments[1]}`)
+    } else if (pathSegments.length === 2 && pathSegments[0] === 'module') {
+      // If we're on a module page, go back to the dashboard
+      router.push('/dashboard')
+    } else {
+      // For any other case, go to the dashboard
+      router.push('/dashboard')
+    }
   };
 
   useEffect(() => {
@@ -75,13 +86,7 @@ export default function DashboardHeader({
       {isMobile && (
         <header className="bg-black w-full border-b border-zinc-800 fixed top-0 left-0 right-0 z-50 p-4 flex items-center justify-between">
           <div className="flex items-center">
-            {isDashboardPage ? (
-              <svg className="h-6 w-6 text-white mr-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            ) : (
+            {pathname !== '/dashboard' && (
               <button onClick={handleBackClick} className="text-white mr-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

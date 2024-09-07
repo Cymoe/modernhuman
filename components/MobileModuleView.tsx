@@ -1,18 +1,20 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback, useRef, useEffect } from 'react'
 import { Module } from '@/types/courseTypes'
 import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
 import { useProgress } from "@/app/contexts/ProgressContext"
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface Props {
   module: Module;
 }
 
 const MobileModuleView: React.FC<Props> = React.memo(({ module }) => {
-  const { progress, isLoading } = useProgress()
+  const router = useRouter()
+  const { progress } = useProgress()
+  const lessonsRef = useRef<HTMLUListElement>(null)
 
   const { moduleProgress, progressPercentage } = useMemo(() => {
     const moduleProgress = progress[module.id.toString()] || {}
@@ -21,18 +23,18 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module }) => {
     return { moduleProgress, progressPercentage }
   }, [progress, module.id, module.lessons.length])
 
-  const handleLessonClick = (e: React.MouseEvent<HTMLAnchorElement>, lessonId: number) => {
-    e.preventDefault()
-    const href = `/module/${module.id}/lesson/${lessonId}`
-    window.location.href = href
-    setTimeout(() => {
-      window.scrollTo(0, 0)
-    }, 100)
-  }
+  useEffect(() => {
+    module.lessons.forEach((lesson) => {
+      router.prefetch(`/module/${module.id}/lesson/${lesson.id}`)
+    })
+  }, [module, router])
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  const handleLessonClick = useCallback((e: React.MouseEvent<HTMLLIElement>, lessonId: number) => {
+    e.preventDefault()
+    requestAnimationFrame(() => {
+      router.push(`/module/${module.id}/lesson/${lessonId}`)
+    })
+  }, [module.id, router])
 
   return (
     <div className="w-full bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl">
@@ -41,17 +43,15 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module }) => {
         <ProgressWithText value={progressPercentage} text={`${Math.round(progressPercentage)}%`} className="mt-2 mb-4" />
       </div>
       <nav>
-        <ul>
+        <ul ref={lessonsRef}>
           {module.lessons.map((lesson) => (
-            <li key={lesson.id}>
-              <Link 
-                href={`/module/${module.id}/lesson/${lesson.id}`}
-                onClick={(e) => handleLessonClick(e, lesson.id)}
-                className="flex items-center justify-between p-2 transition-colors rounded-xl border w-full text-left border-transparent hover:border-blue-600"
-              >
-                <span>{lesson.title}</span>
-                {moduleProgress[lesson.id.toString()] && <CheckCircle className="h-4 w-4 text-green-500" />}
-              </Link>
+            <li 
+              key={lesson.id}
+              onClick={(e) => handleLessonClick(e, lesson.id)}
+              className="flex items-center justify-between p-2 transition-colors rounded-xl border w-full text-left border-transparent hover:border-blue-600 cursor-pointer"
+            >
+              <span>{lesson.title}</span>
+              {moduleProgress[lesson.id.toString()] && <CheckCircle className="h-4 w-4 text-green-500" />}
             </li>
           ))}
         </ul>

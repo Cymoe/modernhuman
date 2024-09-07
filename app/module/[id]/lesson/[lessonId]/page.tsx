@@ -1,130 +1,55 @@
 'use client'
 
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { useProgress } from "@/app/contexts/ProgressContext"
 import { modules } from "@/app/data/courseData"
-import LessonSidebar from "@/components/LessonSidebar"
-import { CheckCircle, ArrowLeft, ArrowRight, Menu } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { Play } from 'lucide-react'
-import { useState, useEffect } from 'react'
-import DashboardHeader from "@/components/DashboardHeader"
-import { calculateProgress } from '@/app/utils/progressCalculator';
-import { useScrollToTop } from '@/app/hooks/useScrollToTop'
 import Link from 'next/link'
-import MobileModuleView from "@/components/MobileModuleView"
-import { Lesson, Module } from '@/types/courseTypes' // Adjust the import path as needed
+import { Lesson, Module } from '@/types/courseTypes'
+
+const LessonSidebar = dynamic(() => import("@/components/LessonSidebar"), { ssr: false })
+const DashboardHeader = dynamic(() => import("@/components/DashboardHeader"), { ssr: false })
 
 export default function LessonPage() {
-  useScrollToTop()
   const params = useParams()
   const router = useRouter()
   const moduleId = parseInt(params.id as string)
-  const [currentLessonId, setCurrentLessonId] = useState<number | null>(
-    params.lessonId ? parseInt(params.lessonId as string) : null
-  )
+  const lessonId = params.lessonId ? parseInt(params.lessonId as string) : null
   const { progress, updateProgress } = useProgress()
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [showLessonContent, setShowLessonContent] = useState(!!currentLessonId)
-  const [lessonContent, setLessonContent] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
-  const [lesson, setLesson] = useState<Lesson | null>(null)
-  const [module, setModule] = useState<Module | null>(null)
-  const [isClient, setIsClient] = useState(false)
-  const [isAllLessonsCompleted, setIsAllLessonsCompleted] = useState(false)
-  const [isModuleCompleted, setIsModuleCompleted] = useState(false)
+
+  const currentModule = useMemo(() => modules.find((module) => module.id === moduleId), [moduleId])
+  const currentLesson = useMemo(() => currentModule?.lessons.find(l => l.id === lessonId), [currentModule, lessonId])
+
+  const { completedLessons, progressPercentage, isCompleted, isAllLessonsCompleted, isModuleCompleted } = useMemo(() => {
+    const completedLessons = progress[moduleId.toString()] || {}
+    const progressPercentage = (Object.values(completedLessons).filter(Boolean).length / (currentModule?.lessons.length || 1)) * 100
+    const isCompleted = lessonId ? completedLessons[lessonId.toString()] || false : false
+    const isAllLessonsCompleted = currentModule?.lessons.every(lesson => completedLessons[lesson.id.toString()]) || false
+    const isModuleCompleted = isAllLessonsCompleted
+    return { completedLessons, progressPercentage, isCompleted, isAllLessonsCompleted, isModuleCompleted }
+  }, [progress, moduleId, currentModule, lessonId])
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    const checkIfMobile = () => {
-      const isMobileView = window.innerWidth < 975
-      setIsMobile(isMobileView)
-      setShowLessonContent(!isMobileView || !!currentLessonId)
-    }
+    const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
     checkIfMobile()
     window.addEventListener('resize', checkIfMobile)
     return () => window.removeEventListener('resize', checkIfMobile)
-  }, [currentLessonId])
+  }, [])
 
-  const currentModule = modules.find((module) => module.id === moduleId);
+  const handleComplete = useCallback(() => {
+    const newCompletionStatus = !isCompleted
+    updateProgress(moduleId.toString(), lessonId?.toString() ?? '', newCompletionStatus)
+  }, [isCompleted, updateProgress, moduleId, lessonId])
 
-  useEffect(() => {
-    if (progress && moduleId && currentModule) {
-      const allCompleted = currentModule.lessons.every((lesson) =>
-        progress[moduleId.toString()]?.[lesson.id.toString()] === true
-      );
-      setIsModuleCompleted(allCompleted)
-    }
-  }, [progress, moduleId, currentModule])
-
-  useEffect(() => {
-    if (lesson) {
-      setLessonContent(lesson.content)
-      setIsLoading(false)
-    }
-  }, [lesson])
-
-  let moduleData = modules.find(m => m.id === moduleId)
-  if (!moduleData) return <div>Module not found</div>
-
-  const completedLessons = progress[moduleId.toString()] || {}
-  const progressPercentage = (Object.values(completedLessons).filter(Boolean).length / moduleData.lessons.length) * 100
-
-  const mobileModuleData = {
-    ...moduleData,
-    progress: progressPercentage,
-    lessons: moduleData.lessons.map(lesson => ({
-      ...lesson,
-      completed: completedLessons[lesson.id.toString()] || false
-    })),
-  }
-
-  const currentLesson = currentLessonId ? moduleData.lessons.find(l => l.id === currentLessonId) : null
-
-  const isCompleted = currentLessonId
-    ? progress[moduleId.toString()]?.[currentLessonId.toString()] || false
-    : false
-
-  const handleComplete = () => {
-    const newCompletionStatus = !progress[moduleId.toString()]?.[currentLessonId?.toString() ?? ''];
-    updateProgress(moduleId.toString(), currentLessonId?.toString() ?? '', newCompletionStatus);
-    
-    // Check if this was the last lesson to complete the module
-    if (newCompletionStatus && currentModule) {
-      const allCompleted = currentModule.lessons.every(lesson => 
-        lesson.id === currentLessonId || progress[moduleId.toString()]?.[lesson.id.toString()]
-      );
-      setIsAllLessonsCompleted(allCompleted);
-      setIsModuleCompleted(allCompleted);
-    }
-  }
-
-  const handleLessonClick = (lessonId: number) => {
-    setCurrentLessonId(lessonId)
-    setShowLessonContent(true)
-    const href = `/module/${moduleId}/lesson/${lessonId}`
-    router.push(href)
-    setTimeout(() => {
-      window.scrollTo(0, 0)
-    }, 100)
-  }
-
-  const nextLesson = currentModule?.lessons.find(l => l.id === (currentLessonId || 0) + 1)
-
-  const handleNextLesson = () => {
-    if (nextLesson) {
-      router.push(`/module/${moduleId}/lesson/${nextLesson.id}`)
-    }
-  }
-
-  const handleMenuClick = () => {
-    router.push(`/module/${moduleId}`);
-  }
+  const handleLessonClick = useCallback((newLessonId: number) => {
+    router.push(`/module/${moduleId}/lesson/${newLessonId}`)
+  }, [router, moduleId])
 
   const renderLessonContent = () => (
     <>
@@ -192,45 +117,45 @@ export default function LessonPage() {
     </>
   )
 
-  const totalLessons = moduleData.lessons.length
+  const nextLesson = currentModule?.lessons.find(l => l.id === (lessonId || 0) + 1)
 
-  if (!currentLesson || !moduleData) {
-    return <div>Loading...</div>
+  const handleNextLesson = () => {
+    if (nextLesson) {
+      router.push(`/module/${moduleId}/lesson/${nextLesson.id}`)
+    }
   }
 
+  const handleMenuClick = () => {
+    router.push(`/module/${moduleId}`);
+  }
+
+  if (!currentLesson || !currentModule) return null
+
   return (
-    <>
-      <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
-        {!isMobile && (
-          <LessonSidebar 
-            moduleId={moduleId} 
-            lessons={moduleData.lessons} 
-            moduleTitle={moduleData.title}
-            onLessonClick={handleLessonClick}
-            currentLessonId={currentLessonId}
-            progressPercentage={currentLessonId !== null 
-              ? calculateProgress(currentLessonId, totalLessons)
-              : 0}
-          />
-        )}
-        <div className={`flex-1 p-2 md:p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
-          {currentLesson ? renderLessonContent() : (
-            <div className="text-center">
-              <h1 className="text-3xl font-bold mb-6">{moduleData.title}</h1>
-              <h2 className="text-2xl mb-4">Select a lesson to begin</h2>
-            </div>
-          )}
-        </div>
+    <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
+      {!isMobile && (
+        <LessonSidebar 
+          moduleId={moduleId} 
+          lessons={currentModule.lessons} 
+          moduleTitle={currentModule.title}
+          onLessonClick={handleLessonClick}
+          currentLessonId={lessonId}
+          progressPercentage={progressPercentage}
+        />
+      )}
+      <div className={`flex-1 p-2 md:p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
+        {renderLessonContent()}
       </div>
       <DashboardHeader 
-        isLessonCompleted={!!progress[moduleId.toString()]?.[currentLessonId?.toString() ?? '']}
+        isLessonCompleted={isCompleted}
         onToggleComplete={handleComplete}
         isModuleCompleted={isModuleCompleted}
         allLessonsCompleted={isAllLessonsCompleted}
       />
-    </>
+    </div>
   )
 }
+
 function getYouTubeId(url: string) {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
