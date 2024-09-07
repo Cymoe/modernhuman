@@ -37,7 +37,7 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module }) => {
   }, [module.id, router])
 
   return (
-    <div className="w-full bg-black overflow-y-auto text-[rgb(75,85,99)] rounded-xl">
+    <div className="w-full bg-black text-[rgb(75,85,99)] rounded-xl">
       <div className="p-2">
         <h2 className="text-xl font-bold text-gray-300 mb-2">{module.title}</h2>
         <ProgressWithText value={progressPercentage} text={`${Math.round(progressPercentage)}%`} className="mt-2 mb-4" />

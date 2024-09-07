@@ -1,5 +1,5 @@
 export interface Module {
-  id: number;
+  id: string; // Change this from number to string
   title: string;
   description: string;
   color: string;

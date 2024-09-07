@@ -1,78 +1,60 @@
 'use client'
 
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
+import { useMemo } from 'react'
 import { modules } from "@/app/data/courseData"
-import LessonSidebar from "@/components/LessonSidebar"
-import { useState, useEffect } from 'react'
 import MobileModuleView from "@/components/MobileModuleView"
-import { useProgress } from "@/app/contexts/ProgressContext"
-import DashboardHeader from "@/components/DashboardHeader" // Add this import
+import DashboardHeader from "@/components/DashboardHeader"
+import { Module as CourseModule } from '@/types/courseTypes';
 
-interface LessonSidebarProps {
-  moduleId: number;
-  lessons: { id: number; title: string; videoUrl: string; content: string; resources: { title: string; url: string; }[]; }[];
-  moduleTitle: string;
-  onLessonClick: (lessonId: number) => void;
-  currentLessonId: number | null;
-  progressPercentage: number; // Add this line
+// Remove or comment out this local type definition
+// type Module = {
+//   id: string; // Change this from number to string
+//   title: string;
+//   description: string;
+//   color: string;
+//   lessons: any[]; // Replace 'any[]' with the correct type for lessons
+//   progress: number;
+// };
+
+export interface Module {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  lessons: any[]; // Replace 'any[]' with the correct type for lessons
+  progress: number;
 }
 
-export default function ModulePage({ params }: { params: { id: string } }) {
-  const { progress } = useProgress();
-  const router = useRouter()
-  const [isMobile, setIsMobile] = useState(false)
-  const moduleId = parseInt(params.id as string)
-  const moduleData = modules.find(m => m.id === moduleId)
+function ModulePage() {
+  const params = useParams()
+  const moduleId = params.id as string
 
-  useEffect(() => {
-    const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
-    checkIfMobile()
-    window.addEventListener('resize', checkIfMobile)
-    return () => window.removeEventListener('resize', checkIfMobile)
-  }, [])
+  const moduleData = useMemo(() => {
+    const foundModule = modules.find(m => m.id.toString() === moduleId)
+    return foundModule ? { ...foundModule, id: moduleId } : null
+  }, [moduleId])
 
-  if (!moduleData) return <div>Module not found</div>
+  if (!moduleData) return null
 
-  const handleLessonClick = (lessonId: number) => {
-    router.push(`/module/${moduleId}/lesson/${lessonId}`)
-  }
-
-  const completedLessons = progress[moduleId.toString()] || {}
-  const totalLessons = moduleData.lessons.length
-  const progressPercentage = (Object.values(completedLessons).filter(Boolean).length / totalLessons) * 100
-
-  const mobileModuleData = {
+  const moduleDataWithProgress: Module = {
     ...moduleData,
-    progress: progressPercentage,
-    lessons: moduleData.lessons.map(lesson => ({
-      ...lesson,
-      completed: completedLessons[lesson.id.toString()] || false
-    })),
-  }
+    id: moduleData.id, // Keep id as string
+    progress: 0, // or whatever default value is appropriate
+    lessons: moduleData?.lessons || [], // Add this line
+  };
 
   return (
-    <div className="flex flex-col mt-16">
+    <div className="flex flex-col min-h-screen pt-16"> {/* Adjust pt-16 as needed */}
+      <MobileModuleView module={moduleDataWithProgress} />
       <DashboardHeader 
-        isLessonCompleted={false} // Replace with actual logic
-        onToggleComplete={() => {}} // Replace with actual function
+        isLessonCompleted={false}
+        onToggleComplete={() => {}}
         isModuleCompleted={false}
         allLessonsCompleted={false}
       />
-      {isMobile ? (
-        <MobileModuleView
-          key={moduleId}
-          module={mobileModuleData}
-        />
-      ) : (
-        <LessonSidebar 
-          moduleId={moduleId} 
-          lessons={moduleData.lessons} 
-          moduleTitle={moduleData.title}
-          onLessonClick={handleLessonClick}
-          currentLessonId={null}
-          progressPercentage={progressPercentage}
-        />
-      )}
     </div>
   )
 }
+
+export default ModulePage
