@@ -6,6 +6,7 @@ import { ProgressWithText } from "@/components/ui/progress-with-text"
 import { CheckCircle } from 'lucide-react'
 import { useProgress } from "@/app/contexts/ProgressContext"
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface Props {
   module: Module;
@@ -29,13 +30,6 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module }) => {
     })
   }, [module, router])
 
-  const handleLessonClick = useCallback((e: React.MouseEvent<HTMLLIElement>, lessonId: number) => {
-    e.preventDefault()
-    requestAnimationFrame(() => {
-      router.push(`/module/${module.id}/lesson/${lessonId}`)
-    })
-  }, [module.id, router])
-
   return (
     <div className="w-full bg-black text-[rgb(75,85,99)] rounded-xl">
       <div className="p-2">
@@ -45,14 +39,16 @@ const MobileModuleView: React.FC<Props> = React.memo(({ module }) => {
       <nav>
         <ul ref={lessonsRef}>
           {module.lessons.map((lesson) => (
-            <li 
+            <Link 
               key={lesson.id}
-              onClick={(e) => handleLessonClick(e, lesson.id)}
-              className="flex items-center justify-between p-2 transition-colors rounded-xl border w-full text-left border-transparent hover:border-blue-600 cursor-pointer"
+              href={`/module/${module.id}/lesson/${lesson.id}`}
+              className="block"
             >
-              <span>{lesson.title}</span>
-              {moduleProgress[lesson.id.toString()] && <CheckCircle className="h-4 w-4 text-green-500" />}
-            </li>
+              <li className="flex items-center justify-between p-2 transition-colors rounded-xl border w-full text-left border-transparent hover:border-blue-600 cursor-pointer">
+                <span>{lesson.title}</span>
+                {moduleProgress[lesson.id.toString()] && <CheckCircle className="h-4 w-4 text-green-500" />}
+              </li>
+            </Link>
           ))}
         </ul>
       </nav>

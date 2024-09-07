@@ -42,6 +42,10 @@ export default function LessonPage() {
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [lessonId])
+
   const handleComplete = useCallback(() => {
     const newCompletionStatus = !isCompleted
     updateProgress(moduleId.toString(), lessonId?.toString() ?? '', newCompletionStatus)
