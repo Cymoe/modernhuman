@@ -37,11 +37,15 @@ function ModulePage() {
 
   if (!moduleData) return null
 
-  const moduleDataWithProgress: Module = {
+  const moduleDataWithProgress: CourseModule = {
     ...moduleData,
-    id: moduleData.id, // Keep id as string
-    progress: 0, // or whatever default value is appropriate
-    lessons: moduleData?.lessons || [], // Add this line
+    id: parseInt(moduleData.id),
+    progress: 0, // Add this line
+    lessons: moduleData.lessons.map(lesson => ({
+      ...lesson,
+      id: typeof lesson.id === 'string' ? parseInt(lesson.id) : lesson.id,
+      completed: false // Add this line
+    })),
   };
 
   return (

@@ -1,5 +1,5 @@
 export interface Module {
-  id: string; // Change this from number to string
+  id: number; // Change this from string to number
   title: string;
   description: string;
   color: string;
@@ -13,7 +13,7 @@ export interface Lesson {
   videoUrl: string;
   content: string;
   resources: Resource[];
-  completed: boolean;
+  completed: boolean; // Add this line if it's not already present
 }
 
 interface Resource {
