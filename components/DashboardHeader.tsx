@@ -81,6 +81,8 @@ export default function DashboardHeader({
     }
   }, [isModuleCompleted, allLessonsCompleted, confettiTriggered, moduleId]);
 
+  const showNav = !isMobile || isDashboardPage;
+
   return (
     <>
       {isMobile && (
@@ -108,7 +110,7 @@ export default function DashboardHeader({
         </header>
       )}
 
-      <header className={`bg-black w-full border-b border-zinc-800 fixed ${isMobile ? 'top-14' : 'top-0'} left-0 right-0 z-40`}>
+      <header className={`bg-black w-full border-b border-zinc-800 fixed ${isMobile ? 'top-14' : 'top-0'} left-0 right-0 z-40 ${isMobile && !isDashboardPage ? 'hidden' : ''}`}>
         <div className="max-w-[1075px] mx-auto p-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-center">
@@ -117,22 +119,24 @@ export default function DashboardHeader({
                   ModernHuman
                 </Link>
               )}
-              <nav className="flex items-center space-x-4">
-                <Link 
-                  href="/dashboard" 
-                  className={`hover:text-gray-300 relative ${isCoursesActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}
-                >
-                  Courses
-                  {isCoursesActive && <div className="absolute bottom-[-18px] left-0 w-full h-[2px] bg-white"></div>}
-                </Link>
-                <Link 
-                  href="/community" 
-                  className={`hover:text-gray-300 relative ${isCommunityActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}
-                >
-                  Community
-                  {isCommunityActive && <div className="absolute bottom-[-18px] left-0 w-full h-[2px] bg-white"></div>}
-                </Link>
-              </nav>
+              {showNav && (
+                <nav className="flex items-center space-x-4">
+                  <Link 
+                    href="/dashboard" 
+                    className={`hover:text-gray-300 relative ${isCoursesActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}
+                  >
+                    Courses
+                    {isCoursesActive && <div className="absolute bottom-[-18px] left-0 w-full h-[2px] bg-white"></div>}
+                  </Link>
+                  <Link 
+                    href="/community" 
+                    className={`hover:text-gray-300 relative ${isCommunityActive ? 'text-white nav-active' : 'text-[rgb(75,85,99)]'}`}
+                  >
+                    Community
+                    {isCommunityActive && <div className="absolute bottom-[-18px] left-0 w-full h-[2px] bg-white"></div>}
+                  </Link>
+                </nav>
+              )}
             </div>
           </div>
           {!isMobile && isSignedIn && (

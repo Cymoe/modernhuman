@@ -25,6 +25,7 @@ export default function LessonPage() {
 
   const currentModule = useMemo(() => modules.find((module) => module.id === moduleId), [moduleId])
   const currentLesson = useMemo(() => currentModule?.lessons.find(l => l.id === lessonId), [currentModule, lessonId])
+  const nextLesson = useMemo(() => currentModule?.lessons.find(l => l.id === (lessonId || 0) + 1), [currentModule, lessonId])
 
   const { completedLessons, progressPercentage, isCompleted, isAllLessonsCompleted, isModuleCompleted } = useMemo(() => {
     const completedLessons = progress[moduleId.toString()] || {}
@@ -36,15 +37,11 @@ export default function LessonPage() {
   }, [progress, moduleId, currentModule, lessonId])
 
   useEffect(() => {
-    const checkIfMobile = () => setIsMobile(window.innerWidth < 975)
+    const checkIfMobile = () => setIsMobile(window.innerWidth <= 768)
     checkIfMobile()
     window.addEventListener('resize', checkIfMobile)
     return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
-
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [lessonId])
 
   const handleComplete = useCallback(() => {
     const newCompletionStatus = !isCompleted
@@ -55,7 +52,7 @@ export default function LessonPage() {
     router.push(`/module/${moduleId}/lesson/${newLessonId}`)
   }, [router, moduleId])
 
-  const renderLessonContent = () => (
+  const renderLessonContent = useCallback(() => (
     <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-gray-300 text-base md:text-2xl font-bold">{currentLesson?.title}</h1>
@@ -119,24 +116,12 @@ export default function LessonPage() {
         ))}
       </div>
     </>
-  )
-
-  const nextLesson = currentModule?.lessons.find(l => l.id === (lessonId || 0) + 1)
-
-  const handleNextLesson = () => {
-    if (nextLesson) {
-      router.push(`/module/${moduleId}/lesson/${nextLesson.id}`)
-    }
-  }
-
-  const handleMenuClick = () => {
-    router.push(`/module/${moduleId}`);
-  }
+  ), [currentLesson, isCompleted, handleComplete, isPlaying, setIsPlaying, moduleId, nextLesson])
 
   if (!currentLesson || !currentModule) return null
 
   return (
-    <div className={`flex flex-col ${isMobile ? 'mt-[3.25rem]' : 'mt-16'}`}>
+    <div className={`flex flex-col ${isMobile ? 'mt-0' : 'mt-16'}`}>
       {!isMobile && (
         <LessonSidebar 
           moduleId={moduleId} 

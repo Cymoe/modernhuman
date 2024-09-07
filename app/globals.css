@@ -158,3 +158,6 @@
   transition: opacity 300ms ease-in;
 }
 
+.flex.flex-col.min-h-screen.pt-16 {
+  padding-top: 0 !important;
+}

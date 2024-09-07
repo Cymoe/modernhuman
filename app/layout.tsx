@@ -54,13 +54,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  useScrollToTop(); // Add this line to use the hook directly in RootLayout
+  const isDashboardPage = pathname === '/dashboard';
 
   return (
     <ClerkProvider
