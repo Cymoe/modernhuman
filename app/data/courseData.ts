@@ -62,6 +62,18 @@ export const modules = [
           { title: "AI Code Review", url: "https://example.com/ai-code-review" },
           { title: "AI Code Optimization", url: "https://example.com/ai-code-optimization" }
         ]
+      },
+      { 
+        id: 6, 
+        title: "Building a Remix Application 🚀",
+        videoUrl: "https://www.loom.com/share/ce68d53f45994ba1bb891cd680c3bf81?t=10&sid=f0cdf11e-bcc9-4522-9de2-b82e77a5aeae",
+        videoEmbed: '<div style="position: relative; padding-bottom: 62.5%; height: 0;"><iframe src="https://www.loom.com/embed/ce68d53f45994ba1bb891cd680c3bf81?sid=5ac1901a-2240-4a43-90db-98aba1d0e923" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>',
+        content: `Summary
+Hey there! In this video, I share my inspiration and key steps to follow: making your bed, meditating, and doing reps to get the blood flowing. I dive into building a Remix application using Next.js and discuss the importance of understanding technology, delegating tasks, and building a team. No coding experience needed to create an MVP quickly. Remember, utilize language models like ChatGPT for information and documentation. Let's explore Remix together!`,
+        resources: [
+          { title: "AI Code Review", url: "https://example.com/ai-code-review" },
+          { title: "AI Code Optimization", url: "https://example.com/ai-code-optimization" }
+        ]
       }
     ],
     color: "bg-blue-500",

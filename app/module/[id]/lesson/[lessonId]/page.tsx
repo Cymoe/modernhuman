@@ -63,33 +63,39 @@ export default function LessonPage() {
           <CheckCircle className="h-6 w-6" />
         </button>
       </div>
-      <div className="relative w-full aspect-video mb-6 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-4xl mx-auto">
-        {!isPlaying ? (
-          <>
-            <Image
-              src={`https://img.youtube.com/vi/${getYouTubeId(currentLesson?.videoUrl ?? '')}/maxresdefault.jpg`}
-              alt={currentLesson?.title ?? ''}
-              layout="fill"
-              objectFit="cover"
-              className="rounded-lg"
+      {currentLesson?.videoEmbed ? (
+        <div className="relative w-full aspect-video mb-6 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-4xl mx-auto"
+             dangerouslySetInnerHTML={{ __html: currentLesson.videoEmbed }}
+        />
+      ) : (
+        <div className="relative w-full aspect-video mb-6 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-4xl mx-auto">
+          {!isPlaying ? (
+            <>
+              <Image
+                src={`https://img.youtube.com/vi/${getYouTubeId(currentLesson?.videoUrl ?? '')}/maxresdefault.jpg`}
+                alt={currentLesson?.title ?? ''}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg"
+              />
+              <button 
+                onClick={() => setIsPlaying(true)}
+                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 hover:bg-opacity-30 transition-opacity duration-300"
+              >
+                <Play size={64} className="text-white" />
+              </button>
+            </>
+          ) : (
+            <iframe
+              src={`${currentLesson?.videoUrl}?autoplay=1`}
+              title={currentLesson?.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full rounded-lg"
             />
-            <button 
-              onClick={() => setIsPlaying(true)}
-              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 hover:bg-opacity-30 transition-opacity duration-300"
-            >
-              <Play size={64} className="text-white" />
-            </button>
-          </>
-        ) : (
-          <iframe
-            src={`${currentLesson?.videoUrl}?autoplay=1`}
-            title={currentLesson?.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full rounded-lg"
-          />
-        )}
-      </div>
+          )}
+        </div>
+      )}
       <div className="flex justify-between items-center mb-4">
         <Link 
           href={`/module/${moduleId}`}
@@ -118,6 +124,8 @@ export default function LessonPage() {
     </>
   ), [currentLesson, isCompleted, handleComplete, isPlaying, setIsPlaying, moduleId, nextLesson])
 
+  const memoizedLessonContent = useMemo(() => renderLessonContent(), [renderLessonContent])
+
   if (!currentLesson || !currentModule) return null
 
   return (
@@ -125,15 +133,15 @@ export default function LessonPage() {
       {!isMobile && (
         <LessonSidebar 
           moduleId={moduleId} 
-          lessons={currentModule.lessons} 
-          moduleTitle={currentModule.title}
+          lessons={currentModule?.lessons || []}
+          moduleTitle={currentModule?.title || ''}
           onLessonClick={handleLessonClick}
           currentLessonId={lessonId}
           progressPercentage={progressPercentage}
         />
       )}
       <div className={`flex-1 p-2 md:p-6 ${!isMobile ? 'lg:ml-96' : ''}`}>
-        {renderLessonContent()}
+        {memoizedLessonContent}
       </div>
       <DashboardHeader 
         isLessonCompleted={isCompleted}

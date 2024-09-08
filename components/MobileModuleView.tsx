@@ -53,10 +53,12 @@ const MobileModuleView = ({ module }: { module: Module }) => {
     if (isMobile) {
       e.preventDefault()
       const href = `/module/${module.id}/lesson/${lessonId}`
-      window.location.href = href
-      setTimeout(() => {
-        window.scrollTo(0, 0)
-      }, 100)
+      requestAnimationFrame(() => {
+        window.location.href = href
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0)
+        })
+      })
     }
   }, [isMobile, module.id])
 
@@ -85,4 +87,4 @@ const MobileModuleView = ({ module }: { module: Module }) => {
 
 MobileModuleView.displayName = 'MobileModuleView'
 
-export default MobileModuleView
+export default React.memo(MobileModuleView)
